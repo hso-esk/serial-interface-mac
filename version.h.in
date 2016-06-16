@@ -1,0 +1,47 @@
+/**
+ * @code
+ *  ___ _____ _   ___ _  _____ ___  ___  ___ ___
+ * / __|_   _/_\ / __| |/ / __/ _ \| _ \/ __| __|
+ * \__ \ | |/ _ \ (__| ' <| _| (_) |   / (__| _|
+ * |___/ |_/_/ \_\___|_|\_\_| \___/|_|_\\___|___|
+ * embedded.connectivity.solutions.==============
+ * @endcode
+ *
+ * @file
+ * @copyright  STACKFORCE GmbH, Heitersheim, Germany, http://www.stackforce.de
+ * @author     STACKFORCE
+ * @author     Lars Möllendorf
+ * @brief      STACKFORCE Serial MAC Module
+ *
+ * @details Please consult the
+ * @ref introduction "README" for a general overview and
+ * @ref usage "how to use" the STACKFORCE Serial MAC.
+ *
+ * This file is part of the STACKFORCE Serial MAC Library
+ * (below "libserialmac").
+ *
+ * libserialmac is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * libserialmac is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with libserialmac.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#ifndef __STACKFORCE_SERIALMAC_VERSION_H_
+#define __STACKFORCE_SERIALMAC_VERSION_H_version.h.in
+
+#define SERIALMAC_VERSION_MAJOR     @SERIALMAC_VERSION_MAJOR@
+#define SERIALMAC_VERSION_MINOR     @SERIALMAC_VERSION_MINOR@
+#define SERIALMAC_VERSION_PATCH     @SERIALMAC_VERSION_PATCH@
+#define SERIALMAC_PRODUCT_COMPANY  "@SERIALMAC_PRODUCT_COMPANY@"
+#define SERIALMAC_PRODUCT_NAME     "@SERIALMAC_PRODUCT_NAME@"
+
+#endif
