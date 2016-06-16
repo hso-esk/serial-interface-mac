@@ -1,0 +1,3 @@
+[submodule "dep/crc"]
+	path = dep/crc
+	url = https://git.stackforce.de/crc
