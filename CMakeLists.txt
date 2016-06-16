@@ -31,9 +31,9 @@
 cmake_minimum_required (VERSION 2.8)
 project (serialmac)
 
-##
-## TARGET
-##
+#---------------------------------------------------------------------------------------
+# TARGET
+#---------------------------------------------------------------------------------------
 set (SERIALMAC_SOURCES
      ${PROJECT_SOURCE_DIR}/sf_serialmac.c
      )
@@ -41,9 +41,9 @@ add_library(serialmac ${SERIALMAC_SOURCES})
 target_include_directories(serialmac PUBLIC ${PROJECT_SOURCE_DIR})
 
 
-##
-## PRODUCT AND VERSION
-##
+#---------------------------------------------------------------------------------------
+# PRODUCT AND VERSION
+#---------------------------------------------------------------------------------------
 set (SERIALMAC_VERSION_MAJOR 0 CACHE STRING "major version")
 set (SERIALMAC_VERSION_MINOR 1 CACHE STRING "minor version")
 set (SERIALMAC_VERSION_PATCH 1 CACHE STRING "patch version")
@@ -57,9 +57,9 @@ configure_file(
     )
 target_include_directories(serialmac PUBLIC ${PROJECT_BINARY_DIR})
 
-###
-### DOXYGEN
-###
+#---------------------------------------------------------------------------------------
+# DOXYGEN
+#---------------------------------------------------------------------------------------
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
 
@@ -90,19 +90,19 @@ else()
 endif(DOXYGEN_FOUND)
 
 
-##
-## INTERNAL PROJECTS
-##
 add_subdirectory(${PROJECT_SOURCE_DIR}/../dep/crc crc)
+#---------------------------------------------------------------------------------------
+# CRC
+#---------------------------------------------------------------------------------------
 
-##
-## LINKING
-##
+#---------------------------------------------------------------------------------------
+# LINKING
+#---------------------------------------------------------------------------------------
 target_link_libraries(serialmac crc)
 
-##
-## INSTALLATION
-##
+#---------------------------------------------------------------------------------------
+# INSTALLATION
+#---------------------------------------------------------------------------------------
 install (TARGETS serialmac DESTINATION lib)
 install (FILES ${PROJECT_SOURCE_DIR}/sf_serialmac.h DESTINATION include)
 
