@@ -61,33 +61,33 @@ target_include_directories(serialmac PUBLIC ${PROJECT_BINARY_DIR})
 # DOXYGEN
 #---------------------------------------------------------------------------------------
 # add a target to generate API documentation with Doxygen
-find_package(Doxygen)
-
-if(DOXYGEN_FOUND)
-    set (SERIALMAC_HEADERS
-         ${PROJECT_SOURCE_DIR}/sf_serialmac.h
-         )
-    string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " "
-        ${PROJECT_SOURCE_DIR}/../README.md)
-    foreach(loop_var IN LISTS SERIALMAC_HEADERS)
-        string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " " ${loop_var})
-    endforeach(loop_var)
-
-    MESSAGE(STATUS "doxyfile input: ${DOXYFILE_INPUT}")
-
-    # TODO: move doxyfiles below lib or this config to root dir
-    configure_file(${PROJECT_SOURCE_DIR}/../doc/Doxyfile.in
-        ${PROJECT_BINARY_DIR}/Doxyfile @ONLY)
-
-    add_custom_target(doc
-        ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
-        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-        COMMENT "Generating API documentation with Doxygen" VERBATIM
-        SOURCES ${PROJECT_BINARY_DIR}/Doxyfile
-        )
-else()
-    add_custom_target(doc SOURCES)
-endif(DOXYGEN_FOUND)
+#find_package(Doxygen)
+#
+#if(DOXYGEN_FOUND)
+#    set (SERIALMAC_HEADERS
+#         ${PROJECT_SOURCE_DIR}/sf_serialmac.h
+#         )
+#    string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " "
+#        ${PROJECT_SOURCE_DIR}/../README.md)
+#    foreach(loop_var IN LISTS SERIALMAC_HEADERS)
+#        string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " " ${loop_var})
+#    endforeach(loop_var)
+#
+#    MESSAGE(STATUS "doxyfile input: ${DOXYFILE_INPUT}")
+#
+#    # TODO: move doxyfiles below lib or this config to root dir
+#    configure_file(${PROJECT_SOURCE_DIR}/../doc/Doxyfile.in
+#        ${PROJECT_BINARY_DIR}/Doxyfile @ONLY)
+#
+#    add_custom_target(doc
+#        ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
+#        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+#        COMMENT "Generating API documentation with Doxygen" VERBATIM
+#        SOURCES ${PROJECT_BINARY_DIR}/Doxyfile
+#        )
+#else()
+#    add_custom_target(doc SOURCES)
+#endif(DOXYGEN_FOUND)
 
 
 #---------------------------------------------------------------------------------------
