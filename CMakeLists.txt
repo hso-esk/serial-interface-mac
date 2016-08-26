@@ -39,6 +39,11 @@ set (SERIALMAC_SOURCES
      )
 add_library(serialmac ${SERIALMAC_SOURCES})
 target_include_directories(serialmac PUBLIC ${PROJECT_SOURCE_DIR})
+# NOTE target_include_directories(PUBLIC) is not enough to get Kdevelop
+# to find the includes, hence the are defined again with INTERFACE_INCLUDE_DIRECTORIES
+set_target_properties(serialmac PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}
+)
 
 
 #---------------------------------------------------------------------------------------
