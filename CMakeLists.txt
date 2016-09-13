@@ -37,7 +37,13 @@ project (serialmac)
 set (SERIALMAC_SOURCES
      ${PROJECT_SOURCE_DIR}/sf_serialmac.c
      )
-add_library(serialmac ${SERIALMAC_SOURCES})
+
+if(STATIC_BUILD)
+	add_library(serialmac STATIC ${SERIALMAC_SOURCES})
+else()
+	add_library(serialmac SHARED ${SERIALMAC_SOURCES})
+endif()
+
 target_include_directories(serialmac PUBLIC ${PROJECT_SOURCE_DIR})
 # NOTE target_include_directories(PUBLIC) is not enough to get Kdevelop
 # to find the includes, hence the are defined again with INTERFACE_INCLUDE_DIRECTORIES
