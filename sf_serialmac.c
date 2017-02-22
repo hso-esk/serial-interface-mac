@@ -66,7 +66,7 @@ extern "C"
 typedef void ( *SF_SERIALMAC_BUF_EVT ) ( struct sf_serialmac_ctx *ctx );
 
 static struct sf_serialmac_buffer* initBuffer (
-    struct sf_serialmac_buffer *buffer, char *memory, size_t length,
+    struct sf_serialmac_buffer *buffer, uint8_t *memory, size_t length,
     SF_SERIALMAC_BUF_EVT callback );
 static void txInit ( struct sf_serialmac_ctx *ctx );
 static enum sf_serialmac_return tx ( struct sf_serialmac_ctx *ctx,
@@ -86,7 +86,7 @@ static void rxProcCrcCB ( struct sf_serialmac_ctx *ctx );
 
 
 static struct sf_serialmac_buffer *initBuffer (
-    struct sf_serialmac_buffer *buffer, char *memory, size_t length,
+    struct sf_serialmac_buffer *buffer, uint8_t *memory, size_t length,
     SF_SERIALMAC_BUF_EVT callback )
 {
     if ( buffer ) {
@@ -115,11 +115,10 @@ static void initFrame ( struct sf_serialmac_frame *frame, uint8_t syncWord )
 
 static void txInit ( struct sf_serialmac_ctx *ctx )
 {
-    initBuffer ( &ctx->txFrame.headerBuffer, ( uint8_t* )
-                 &ctx->txFrame.headerMemory,
+    initBuffer ( &ctx->txFrame.headerBuffer, ctx->txFrame.headerMemory,
                  SF_SERIALMAC_PROTOCOL_HEADER_LEN, txProcHeaderCB );
     initBuffer ( &ctx->txFrame.payloadBuffer, NULL, 0, txProcPayloadCB );
-    initBuffer ( &ctx->txFrame.crcBuffer, ( uint8_t* ) &ctx->txFrame.crcMemory,
+    initBuffer ( &ctx->txFrame.crcBuffer, ctx->txFrame.crcMemory,
                  SF_SERIALMAC_PROTOCOL_CRC_FIELD_LEN, txProcCrcCB );
     initFrame ( &ctx->txFrame, SF_SERIALMAC_PROTOCOL_SYNC_WORD );
 }
@@ -220,7 +219,7 @@ static void txProcPayloadCB ( struct sf_serialmac_ctx *ctx )
      * Save a pointer to the buffer_memory for the callback function.
      * This pointer is passed to the upper layer so it can free the memory.
      */
-    char *buffer_memory = ctx->txFrame.payloadBuffer.memory;
+    uint8_t *buffer_memory = ctx->txFrame.payloadBuffer.memory;
     uint16_t crcRead = 0;
     uint16_t crcCalc = 0;
     size_t processed = ctx->txFrame.payloadBuffer.length -
@@ -411,7 +410,7 @@ enum sf_serialmac_return sf_serialmac_tx_frame_start ( struct sf_serialmac_ctx
 
 
 enum sf_serialmac_return sf_serialmac_tx_frame_append ( struct sf_serialmac_ctx
-        *ctx, const char *frmBufLoc, size_t frmBufSize )
+        *ctx, const uint8_t *frmBufLoc, size_t frmBufSize )
 {
     size_t buff = 0;
     if ( !ctx ) {
@@ -433,14 +432,14 @@ enum sf_serialmac_return sf_serialmac_tx_frame_append ( struct sf_serialmac_ctx
      * to assign payload buffers are prevented untill the currently assigned
      * buffer has been processed.
      */
-    initBuffer ( &ctx->txFrame.payloadBuffer, ( char* ) frmBufLoc, buff,
+    initBuffer ( &ctx->txFrame.payloadBuffer, ( uint8_t* ) frmBufLoc, buff,
                  txProcPayloadCB );
     return SF_SERIALMAC_SUCCESS;
 }
 
 
 enum sf_serialmac_return sf_serialmac_tx_frame ( struct sf_serialmac_ctx *ctx,
-        size_t frmLen, const char *frmBufLoc, size_t frmBufSize )
+        size_t frmLen, const uint8_t *frmBufLoc, size_t frmBufSize )
 {
     sf_serialmac_tx_frame_start ( ctx, frmLen );
     return sf_serialmac_tx_frame_append ( ctx, frmBufLoc, frmBufSize );
@@ -448,7 +447,7 @@ enum sf_serialmac_return sf_serialmac_tx_frame ( struct sf_serialmac_ctx *ctx,
 
 
 enum sf_serialmac_return sf_serialmac_rx_frame ( struct sf_serialmac_ctx *ctx,
-        char *frmBufLoc, size_t frmBufSize )
+        uint8_t *frmBufLoc, size_t frmBufSize )
 {
     if ( !ctx || !frmBufLoc ) {
         return SF_SERIALMAC_ERROR_NPE;
@@ -499,8 +498,8 @@ enum sf_serialmac_return sf_serialmac_hal_tx_callback ( struct sf_serialmac_ctx
                  * The second parameter contains the payload, the last parameter
                  * is for storing the CRC which is calculated by tx().
                  */
-                ret = tx ( ctx, &ctx->txFrame.payloadBuffer, ( uint8_t * )
-                           &ctx->txFrame.crcMemory );
+                ret = tx ( ctx, &ctx->txFrame.payloadBuffer,
+                           ctx->txFrame.crcMemory );
             }
             break;
         case CRC:
@@ -548,7 +547,7 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
                 ret = rx ( ctx, &ctx->rxFrame.headerBuffer,
                            SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN );
                 /** FIXME: this only works for sync words of 1 byte length! */
-                if ( ctx->rxFrame.headerBuffer.memory[0] == ( char )
+                if ( ctx->rxFrame.headerBuffer.memory[0] == ( uint8_t )
                         SF_SERIALMAC_PROTOCOL_SYNC_WORD ) {
                     ctx->rxFrame.state = HEADER;
                 } else {

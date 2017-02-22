@@ -86,19 +86,19 @@ enum sf_serialmac_return
  */
 struct sf_serialmac_ctx;
 
-
 /**
  * Signature of HAL's read function to be used by the MAC for RX.
  * This has to be passed on @ref initialization to sf_serialmac_init().
  */
 typedef size_t ( *SF_SERIALMAC_HAL_READ_FUNCTION ) ( void *port_handle,
-        char *frame_buffer, size_t frame_buffer_length );
+        uint8_t *frame_buffer, size_t frame_buffer_length );
 /**
  * Signature of HAL's function which returns the number of bytes waiting on
  * input to be used by the MAC for RX.
  * This has to be passed on @ref initialization to sf_serialmac_init().
  */
 typedef size_t ( *SF_SERIALMAC_HAL_READ_WAIT_FUNCTION ) ( void *port_handle );
+
 /**
  * Signature of HAL's write function to be used by the MAC for TX.
  * This has to be passed on @ref initialization to sf_serialmac_init().
@@ -109,7 +109,8 @@ typedef size_t ( *SF_SERIALMAC_HAL_READ_WAIT_FUNCTION ) ( void *port_handle );
  * @return Number of bytes successfully written.
  */
 typedef size_t ( *SF_SERIALMAC_HAL_WRITE_FUNCTION ) ( void *port_handle,
-        char *frame_buffer, size_t frame_buffer_length );
+        uint8_t *frame_buffer, size_t frame_buffer_length );
+
 /**
  * Signature of upper layer's callback functions to be called by the MAC
  * on events.
@@ -117,7 +118,7 @@ typedef size_t ( *SF_SERIALMAC_HAL_WRITE_FUNCTION ) ( void *port_handle,
  * sf_serialmac_init().
  */
 typedef void ( *SF_SERIALMAC_EVENT ) ( void *mac_context,
-                                       char *frame_buffer,
+                                       uint8_t *frame_buffer,
                                        size_t frame_buffer_length );
 
 
@@ -257,11 +258,11 @@ enum sf_serialmac_return sf_serialmac_tx_frame_start ( struct sf_serialmac_ctx
  *                                          progress.
  */
 enum sf_serialmac_return sf_serialmac_tx_frame_append ( struct sf_serialmac_ctx
-        *ctx, const char *frame_buffer, size_t frame_buffer_size );
+        *ctx, const uint8_t *frame_buffer, size_t frame_buffer_size );
 
 
 /**
- * Start a frame iff not already done and append given payload.
+ * Start a frame if not already done and append given payload.
  * It is save to always use this function instead of
  * sf_serialmac_tx_frame_start() and sf_serialmac_tx_frame_append().
  * This function is a combination of sf_serialmac_tx_frame_start() and
@@ -283,7 +284,7 @@ enum sf_serialmac_return sf_serialmac_tx_frame_append ( struct sf_serialmac_ctx
  *                                          progress.
  */
 enum sf_serialmac_return sf_serialmac_tx_frame ( struct sf_serialmac_ctx *ctx,
-        size_t frame_length, const char *frame_buffer, size_t frame_buffer_size
+        size_t frame_length, const uint8_t *frame_buffer, size_t frame_buffer_size
                                                );
 
 
@@ -301,7 +302,7 @@ enum sf_serialmac_return sf_serialmac_tx_frame ( struct sf_serialmac_ctx *ctx,
  * @param frame_buffer_size The size of the frame_buffer in bytes.
  */
 enum sf_serialmac_return sf_serialmac_rx_frame ( struct sf_serialmac_ctx *ctx,
-        char *frame_buffer, size_t frame_buffer_size );
+        uint8_t *frame_buffer, size_t frame_buffer_size );
 
 
 /*
@@ -365,7 +366,7 @@ typedef void ( *SF_SERIALMAC_BUF_EVT ) ( struct sf_serialmac_ctx *ctx );
  */
 struct sf_serialmac_buffer {
     /** Memory for the bytes to be processed. */
-    char *memory;
+    uint8_t *memory;
     /** length of the buffer memory in bytes. */
     size_t length;
     /** Bytes that still needs to be processed. */
