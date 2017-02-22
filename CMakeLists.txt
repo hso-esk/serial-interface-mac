@@ -31,6 +31,24 @@
 cmake_minimum_required (VERSION 2.8)
 project (serialmac)
 
+
+#---------------------------------------------------------------------------------------
+# PRODUCT AND VERSION
+#---------------------------------------------------------------------------------------
+set (SERIALMAC_VERSION_MAJOR 0 CACHE STRING "major version")
+set (SERIALMAC_VERSION_MINOR 1 CACHE STRING "minor version")
+set (SERIALMAC_VERSION_PATCH 2 CACHE STRING "patch version")
+set (SERIALMAC_PRODUCT_COMPANY "STACKFORCE" CACHE STRING "company")
+set (SERIALMAC_PRODUCT_NAME    "Serial MAC" CACHE STRING "product")
+set (SERIALMAC_VERSION ${SERIALMAC_VERSION_MAJOR}.${SERIALMAC_VERSION_MINOR}.${SERIALMAC_VERSION_PATCH} )
+
+# configure a header file to pass some of the CMake settings
+# to the source code
+configure_file(
+    ${PROJECT_SOURCE_DIR}/version.h.in
+    ${PROJECT_BINARY_DIR}/version.h
+    )
+
 #---------------------------------------------------------------------------------------
 # TARGET
 #---------------------------------------------------------------------------------------
@@ -43,34 +61,19 @@ option(BUILD_SHARED_LIBS "Set to ON to build shared libraries" OFF)
 
 add_library(serialmac ${SERIALMAC_SOURCES})
 
-target_include_directories(serialmac PUBLIC ${PROJECT_SOURCE_DIR})
+target_include_directories(serialmac PUBLIC ${PROJECT_SOURCE_DIR}
+                                            ${PROJECT_BINARY_DIR})
+
 # NOTE target_include_directories(PUBLIC) is not enough to get Kdevelop
 # to find the includes, hence the are defined again with INTERFACE_INCLUDE_DIRECTORIES
 set_target_properties(serialmac PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}
+    VERSION  ${SERIALMAC_VERSION}
 )
-
-
-#---------------------------------------------------------------------------------------
-# PRODUCT AND VERSION
-#---------------------------------------------------------------------------------------
-set (SERIALMAC_VERSION_MAJOR 0 CACHE STRING "major version")
-set (SERIALMAC_VERSION_MINOR 1 CACHE STRING "minor version")
-set (SERIALMAC_VERSION_PATCH 2 CACHE STRING "patch version")
-set (SERIALMAC_PRODUCT_COMPANY "STACKFORCE" CACHE STRING "company")
-set (SERIALMAC_PRODUCT_NAME    "Serial MAC" CACHE STRING "product")
-# configure a header file to pass some of the CMake settings
-# to the source code
-configure_file(
-    ${PROJECT_SOURCE_DIR}/version.h.in
-    ${PROJECT_BINARY_DIR}/version.h
-    )
-target_include_directories(serialmac PUBLIC ${PROJECT_BINARY_DIR})
 
 #---------------------------------------------------------------------------------------
 # DOXYGEN
 #---------------------------------------------------------------------------------------
-
 #add a target to generate API documentation with Doxygen
 find_package(Doxygen)
 option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
