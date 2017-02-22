@@ -60,7 +60,7 @@ or to define a custom install directory e.g. devroot:
 
     cmake .. -DCMAKE_INSTALL_PREFIX=devroot
     make
-    sudo make install
+    make install
     
 To generate the doxygen documentation run:
 
