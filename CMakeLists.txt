@@ -38,11 +38,10 @@ set (SERIALMAC_SOURCES
      ${PROJECT_SOURCE_DIR}/sf_serialmac.c
      )
 
-if(STATIC_BUILD)
-	add_library(serialmac STATIC ${SERIALMAC_SOURCES})
-else()
-	add_library(serialmac SHARED ${SERIALMAC_SOURCES})
-endif()
+# Build static libraries only
+option(BUILD_SHARED_LIBS "Set to ON to build shared libraries" OFF)
+
+add_library(serialmac ${SERIALMAC_SOURCES})
 
 target_include_directories(serialmac PUBLIC ${PROJECT_SOURCE_DIR})
 # NOTE target_include_directories(PUBLIC) is not enough to get Kdevelop
@@ -71,35 +70,38 @@ target_include_directories(serialmac PUBLIC ${PROJECT_BINARY_DIR})
 #---------------------------------------------------------------------------------------
 # DOXYGEN
 #---------------------------------------------------------------------------------------
-# add a target to generate API documentation with Doxygen
-#find_package(Doxygen)
-#
-#if(DOXYGEN_FOUND)
-#    set (SERIALMAC_HEADERS
-#         ${PROJECT_SOURCE_DIR}/sf_serialmac.h
-#         )
-#    string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " "
-#        ${PROJECT_SOURCE_DIR}/../README.md)
-#    foreach(loop_var IN LISTS SERIALMAC_HEADERS)
-#        string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " " ${loop_var})
-#    endforeach(loop_var)
-#
-#    MESSAGE(STATUS "doxyfile input: ${DOXYFILE_INPUT}")
-#
-#    # TODO: move doxyfiles below lib or this config to root dir
-#    configure_file(${PROJECT_SOURCE_DIR}/../doc/Doxyfile.in
-#        ${PROJECT_BINARY_DIR}/Doxyfile @ONLY)
-#
-#    add_custom_target(doc
-#        ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
-#        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-#        COMMENT "Generating API documentation with Doxygen" VERBATIM
-#        SOURCES ${PROJECT_BINARY_DIR}/Doxyfile
-#        )
-#else()
-#    add_custom_target(doc SOURCES)
-#endif(DOXYGEN_FOUND)
 
+#add a target to generate API documentation with Doxygen
+find_package(Doxygen)
+option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
+
+if(BUILD_DOCUMENTATION)
+    if(NOT DOXYGEN_FOUND)
+        message(FATAL_ERROR "Doxygen is needed to build the documentation.")
+    endif()
+
+    set (SERIALMAC_HEADERS
+         ${PROJECT_SOURCE_DIR}/sf_serialmac.h
+         )
+    string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " "
+        ${PROJECT_SOURCE_DIR}/README.md)
+    foreach(loop_var IN LISTS SERIALMAC_HEADERS)
+        string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " " ${loop_var})
+    endforeach(loop_var)
+
+    message(STATUS "doxyfile input: ${DOXYFILE_INPUT}")
+
+    configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in
+        ${PROJECT_BINARY_DIR}/Doxyfile @ONLY)
+
+    add_custom_target(doc
+        ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen" VERBATIM
+        SOURCES ${PROJECT_BINARY_DIR}/Doxyfile
+        )
+    install(DIRECTORY ${PROJECT_BINARY_DIR}/html DESTINATION share/doc)
+endif()
 
 #---------------------------------------------------------------------------------------
 # CRC
@@ -114,6 +116,6 @@ target_link_libraries(serialmac crc)
 #---------------------------------------------------------------------------------------
 # INSTALLATION
 #---------------------------------------------------------------------------------------
-install (TARGETS serialmac DESTINATION lib)
-install (FILES ${PROJECT_SOURCE_DIR}/sf_serialmac.h DESTINATION include)
+install(TARGETS serialmac DESTINATION lib)
+install(FILES ${PROJECT_SOURCE_DIR}/sf_serialmac.h DESTINATION include)
 
