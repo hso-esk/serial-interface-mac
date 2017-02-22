@@ -56,7 +56,7 @@ set_target_properties(serialmac PROPERTIES
 #---------------------------------------------------------------------------------------
 set (SERIALMAC_VERSION_MAJOR 0 CACHE STRING "major version")
 set (SERIALMAC_VERSION_MINOR 1 CACHE STRING "minor version")
-set (SERIALMAC_VERSION_PATCH 1 CACHE STRING "patch version")
+set (SERIALMAC_VERSION_PATCH 2 CACHE STRING "patch version")
 set (SERIALMAC_PRODUCT_COMPANY "STACKFORCE" CACHE STRING "company")
 set (SERIALMAC_PRODUCT_NAME    "Serial MAC" CACHE STRING "product")
 # configure a header file to pass some of the CMake settings
@@ -100,7 +100,7 @@ if(BUILD_DOCUMENTATION)
         COMMENT "Generating API documentation with Doxygen" VERBATIM
         SOURCES ${PROJECT_BINARY_DIR}/Doxyfile
         )
-    install(DIRECTORY ${PROJECT_BINARY_DIR}/html DESTINATION share/doc)
+    install(DIRECTORY ${PROJECT_BINARY_DIR}/doc/html DESTINATION share/doc)
 endif()
 
 #---------------------------------------------------------------------------------------
