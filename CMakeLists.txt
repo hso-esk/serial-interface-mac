@@ -72,6 +72,11 @@ set_target_properties(serialmac PROPERTIES
 )
 
 #---------------------------------------------------------------------------------------
+# CRC
+#---------------------------------------------------------------------------------------
+add_subdirectory(${PROJECT_SOURCE_DIR}/dep/crc crc)
+
+#---------------------------------------------------------------------------------------
 # DOXYGEN
 #---------------------------------------------------------------------------------------
 #add a target to generate API documentation with Doxygen
@@ -83,12 +88,14 @@ if(BUILD_DOCUMENTATION)
         message(FATAL_ERROR "Doxygen is needed to build the documentation.")
     endif()
 
-    set (SERIALMAC_HEADERS
-         ${PROJECT_SOURCE_DIR}/sf_serialmac.h
-         )
+    get_target_property( DOXYGEN_INPUT_SERIALMAC serialmac INCLUDE_DIRECTORIES)
+    get_target_property( DOXYGEN_INPUT_CRC crc INCLUDE_DIRECTORIES)
+    set( DOXYGEN_INPUT ${DOXYGEN_INPUT_SERIALMAC}
+                       ${DOXYGEN_INPUT_CRC})
+
     string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " "
         ${PROJECT_SOURCE_DIR}/README.md)
-    foreach(loop_var IN LISTS SERIALMAC_HEADERS)
+    foreach(loop_var IN LISTS DOXYGEN_INPUT)
         string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " " ${loop_var})
     endforeach(loop_var)
 
@@ -105,11 +112,6 @@ if(BUILD_DOCUMENTATION)
         )
     install(DIRECTORY ${PROJECT_BINARY_DIR}/doc/html DESTINATION share/doc)
 endif()
-
-#---------------------------------------------------------------------------------------
-# CRC
-#---------------------------------------------------------------------------------------
-add_subdirectory(${PROJECT_SOURCE_DIR}/dep/crc crc)
 
 #---------------------------------------------------------------------------------------
 # LINKING
