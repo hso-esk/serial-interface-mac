@@ -366,7 +366,7 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
         void *portHandle, SF_SERIALMAC_HAL_READ_FUNCTION read,
         SF_SERIALMAC_HAL_READ_WAIT_FUNCTION readWaiting,
         SF_SERIALMAC_HAL_WRITE_FUNCTION write, SF_SERIALMAC_EVENT rxEvt,
-        SF_SERIALMAC_EVENT rxBufEvt,
+        SF_SERIALMAC_EVENT rxBufEvt, SF_SERIALMAC_EVENT rxSyncEvt,
         SF_SERIALMAC_EVENT txEvt, SF_SERIALMAC_EVENT txBufEvt )
 {
     if ( !ctx ) {
@@ -378,6 +378,7 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
     ctx->write = write;
     ctx->rx_frame_event = rxEvt;
     ctx->rx_buffer_event = rxBufEvt;
+    ctx->rx_sync_event = rxSyncEvt;
     ctx->tx_frame_event = txEvt;
     ctx->tx_buffer_event = txBufEvt;
 
@@ -563,6 +564,8 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
                 if ( ctx->rxFrame.headerBuffer.memory[0] == ( uint8_t )
                         SF_SERIALMAC_PROTOCOL_SYNC_WORD ) {
                     ctx->rxFrame.state = HEADER;
+                    /** Inform the upper layer that a sync byte has been received. */
+                    ctx->rx_sync_event( ctx, NULL, 0U);
                 } else {
                     initBuffer ( &ctx->rxFrame.headerBuffer, ( uint8_t* )
                                  &ctx->rxFrame.headerMemory,
