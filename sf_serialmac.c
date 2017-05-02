@@ -380,14 +380,27 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
     ctx->rx_buffer_event = rxBufEvt;
     ctx->tx_frame_event = txEvt;
     ctx->tx_buffer_event = txBufEvt;
-    txInit ( ctx );
-    ctx->txFrame.state = IDLE;
-    rxInit ( ctx );
-    ctx->rxFrame.state = IDLE;
+
+    /** Reset the context states and variables. */
+    sf_serialmac_reset( ctx );
 
     return SF_SERIALMAC_SUCCESS;
 }
 
+enum sf_serialmac_return sf_serialmac_reset ( struct sf_serialmac_ctx *ctx )
+{
+  if ( !ctx ) {
+    return SF_SERIALMAC_ERROR_NPE;
+  }
+
+  /** Reset the context states and variables. */
+  txInit ( ctx );
+  ctx->txFrame.state = IDLE;
+  rxInit ( ctx );
+  ctx->rxFrame.state = IDLE;
+
+  return SF_SERIALMAC_SUCCESS;
+}
 
 enum sf_serialmac_return sf_serialmac_tx_frame_start ( struct sf_serialmac_ctx
         *ctx, size_t len )

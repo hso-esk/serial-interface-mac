@@ -138,8 +138,7 @@ size_t sf_serialmac_ctx_size ( void );
 /**
  * Initialization of STACKFORCE Serial MAC.
  *
- * This function must be called once before the MAC can be used and may be
- * called whenever the MAC should be reset.
+ * This function must be called once before the MAC can be used.
  *
  * @param ctx Points to the memory region the MAC can use for its context.
  * Please use sf_serialmac_ctx_size() to get the memory size needed by the
@@ -168,6 +167,17 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
         SF_SERIALMAC_EVENT rx_buffer_event,
         SF_SERIALMAC_EVENT tx_event, SF_SERIALMAC_EVENT tx_buffer_event );
 
+/**
+ * Reset function of STACKFORCE Serial MAC.
+ *
+ * This function resets the variables and states in the ctx and can be
+ * called whenever a reset of the state of the Serial MAC is needed
+ * (e.g. after a timeout in the application).
+ *
+ * @param ctx Context to reset variables txFrame and rxFrame.
+ * @return Error state.
+ */
+enum sf_serialmac_return sf_serialmac_reset ( struct sf_serialmac_ctx *ctx );
 
 /**
  * This function can be passed to the HAL layer as callback function to be
@@ -416,6 +426,8 @@ struct sf_serialmac_ctx {
     SF_SERIALMAC_EVENT rx_frame_event;
     /** Function to be called when a RX buffer is needed to receive a frame. */
     SF_SERIALMAC_EVENT rx_buffer_event;
+    /** Function to be called when a sync byte has been received. */
+    SF_SERIALMAC_EVENT rx_sync_event;
     /** Function to be called when a whole frame has been sent. */
     SF_SERIALMAC_EVENT tx_frame_event;
     /** Function to be called when a TX buffer has been processed. */
