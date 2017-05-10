@@ -294,6 +294,12 @@ static enum sf_serialmac_return rx ( struct sf_serialmac_ctx *ctx,
             buffer->callback ( ctx );
         }
     }
+    else if( buffer->memory == NULL )
+    {
+      /** No buffer assigned. */
+      return SF_SERIALMAC_ERROR_BUFFER;
+    }
+
     return SF_SERIALMAC_SUCCESS;
 }
 
