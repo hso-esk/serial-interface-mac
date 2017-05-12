@@ -433,7 +433,7 @@ enum sf_serialmac_return sf_serialmac_tx_frame_append ( struct sf_serialmac_ctx
         *ctx, const uint8_t *frmBufLoc, size_t frmBufSize )
 {
     size_t buff = 0;
-    if ( !ctx ) {
+    if ( !ctx || !frmBufLoc ) {
         return SF_SERIALMAC_ERROR_NPE;
     }
     /**
