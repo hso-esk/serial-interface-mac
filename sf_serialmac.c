@@ -461,6 +461,10 @@ enum sf_serialmac_return sf_serialmac_tx_frame_append ( struct sf_serialmac_ctx
 enum sf_serialmac_return sf_serialmac_tx_frame ( struct sf_serialmac_ctx *ctx,
         size_t frmLen, const uint8_t *frmBufLoc, size_t frmBufSize )
 {
+  if( !ctx || !frmBufLoc ) {
+    return SF_SERIALMAC_ERROR_NPE;
+  }
+
     sf_serialmac_tx_frame_start ( ctx, frmLen );
     return sf_serialmac_tx_frame_append ( ctx, frmBufLoc, frmBufSize );
 }
