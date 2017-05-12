@@ -525,6 +525,9 @@ enum sf_serialmac_return sf_serialmac_hal_tx_callback ( struct sf_serialmac_ctx
                 ret = tx ( ctx, &ctx->txFrame.payloadBuffer,
                            ctx->txFrame.crcMemory );
             }
+            else {
+              ret = SF_SERIALMAC_ERROR_NPE;
+            }
             break;
         case CRC:
             ret = tx ( ctx, &ctx->txFrame.crcBuffer, NULL );
