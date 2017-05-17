@@ -31,6 +31,24 @@
 cmake_minimum_required (VERSION 2.8)
 project (serialmac)
 
+
+#---------------------------------------------------------------------------------------
+# PRODUCT AND VERSION
+#---------------------------------------------------------------------------------------
+set (SERIALMAC_VERSION_MAJOR 0 CACHE STRING "major version")
+set (SERIALMAC_VERSION_MINOR 1 CACHE STRING "minor version")
+set (SERIALMAC_VERSION_PATCH 2 CACHE STRING "patch version")
+set (SERIALMAC_PRODUCT_COMPANY "STACKFORCE" CACHE STRING "company")
+set (SERIALMAC_PRODUCT_NAME    "Serial MAC" CACHE STRING "product")
+set (SERIALMAC_VERSION ${SERIALMAC_VERSION_MAJOR}.${SERIALMAC_VERSION_MINOR}.${SERIALMAC_VERSION_PATCH})
+
+# configure a header file to pass some of the CMake settings
+# to the source code
+configure_file(
+    ${PROJECT_SOURCE_DIR}/version.h.in
+    ${PROJECT_BINARY_DIR}/version.h
+    )
+
 #---------------------------------------------------------------------------------------
 # TARGET
 #---------------------------------------------------------------------------------------
@@ -38,73 +56,98 @@ set (SERIALMAC_SOURCES
      ${PROJECT_SOURCE_DIR}/sf_serialmac.c
      )
 
-if(STATIC_BUILD)
-	add_library(serialmac STATIC ${SERIALMAC_SOURCES})
-else()
-	add_library(serialmac SHARED ${SERIALMAC_SOURCES})
-endif()
+# Build static libraries only
+option(BUILD_SHARED_LIBS "Set to ON to build shared libraries" OFF)
 
-target_include_directories(serialmac PUBLIC ${PROJECT_SOURCE_DIR})
+add_library(serialmac ${SERIALMAC_SOURCES})
+
+target_include_directories(serialmac PUBLIC ${PROJECT_SOURCE_DIR}
+                                            ${PROJECT_BINARY_DIR})
+
 # NOTE target_include_directories(PUBLIC) is not enough to get Kdevelop
 # to find the includes, hence the are defined again with INTERFACE_INCLUDE_DIRECTORIES
 set_target_properties(serialmac PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}
+    VERSION  ${SERIALMAC_VERSION}
 )
-
-
-#---------------------------------------------------------------------------------------
-# PRODUCT AND VERSION
-#---------------------------------------------------------------------------------------
-set (SERIALMAC_VERSION_MAJOR 0 CACHE STRING "major version")
-set (SERIALMAC_VERSION_MINOR 1 CACHE STRING "minor version")
-set (SERIALMAC_VERSION_PATCH 1 CACHE STRING "patch version")
-set (SERIALMAC_PRODUCT_COMPANY "STACKFORCE" CACHE STRING "company")
-set (SERIALMAC_PRODUCT_NAME    "Serial MAC" CACHE STRING "product")
-# configure a header file to pass some of the CMake settings
-# to the source code
-configure_file(
-    ${PROJECT_SOURCE_DIR}/version.h.in
-    ${PROJECT_BINARY_DIR}/version.h
-    )
-target_include_directories(serialmac PUBLIC ${PROJECT_BINARY_DIR})
-
-#---------------------------------------------------------------------------------------
-# DOXYGEN
-#---------------------------------------------------------------------------------------
-# add a target to generate API documentation with Doxygen
-#find_package(Doxygen)
-#
-#if(DOXYGEN_FOUND)
-#    set (SERIALMAC_HEADERS
-#         ${PROJECT_SOURCE_DIR}/sf_serialmac.h
-#         )
-#    string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " "
-#        ${PROJECT_SOURCE_DIR}/../README.md)
-#    foreach(loop_var IN LISTS SERIALMAC_HEADERS)
-#        string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " " ${loop_var})
-#    endforeach(loop_var)
-#
-#    MESSAGE(STATUS "doxyfile input: ${DOXYFILE_INPUT}")
-#
-#    # TODO: move doxyfiles below lib or this config to root dir
-#    configure_file(${PROJECT_SOURCE_DIR}/../doc/Doxyfile.in
-#        ${PROJECT_BINARY_DIR}/Doxyfile @ONLY)
-#
-#    add_custom_target(doc
-#        ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
-#        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-#        COMMENT "Generating API documentation with Doxygen" VERBATIM
-#        SOURCES ${PROJECT_BINARY_DIR}/Doxyfile
-#        )
-#else()
-#    add_custom_target(doc SOURCES)
-#endif(DOXYGEN_FOUND)
-
 
 #---------------------------------------------------------------------------------------
 # CRC
 #---------------------------------------------------------------------------------------
 add_subdirectory(${PROJECT_SOURCE_DIR}/dep/crc crc)
+
+#---------------------------------------------------------------------------------------
+# DOXYGEN
+#---------------------------------------------------------------------------------------
+#add a target to generate API documentation with Doxygen
+find_package(Doxygen 1.8.13 )
+option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen 1.8.13)" ${DOXYGEN_FOUND})
+
+if(BUILD_DOCUMENTATION)
+    if(NOT DOXYGEN_FOUND)
+        message(FATAL_ERROR "Doxygen 1.8.13 is needed to build the documentation.")
+    endif()
+
+    get_target_property( DOXYGEN_INPUT_SERIALMAC serialmac INCLUDE_DIRECTORIES)
+    get_target_property( DOXYGEN_INPUT_CRC crc INCLUDE_DIRECTORIES)
+    set( DOXYGEN_INPUT ${DOXYGEN_INPUT_SERIALMAC}
+                       ${DOXYGEN_INPUT_CRC})
+
+    string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " "
+        ${PROJECT_SOURCE_DIR}/README.md)
+    foreach(loop_var IN LISTS DOXYGEN_INPUT)
+        string(CONCAT DOXYFILE_INPUT ${DOXYFILE_INPUT} " " ${loop_var})
+    endforeach(loop_var)
+
+    message(STATUS "doxyfile input: ${DOXYFILE_INPUT}")
+
+    set(SF_CORPORATE_DESIGN_URL "INSERT_HERE_THE_URL")
+    message(STATUS "Download files for STACKFORCE corporate design:")
+    file(DOWNLOAD
+        "${SF_CORPORATE_DESIGN_URL}/bootstrap.min.css"
+        ${PROJECT_BINARY_DIR}/bootstrap.min.css
+        SHOW_PROGRESS
+        )
+    file(DOWNLOAD
+        "${SF_CORPORATE_DESIGN_URL}/sf_stylesheet.css"
+        ${PROJECT_BINARY_DIR}/sf_stylesheet.css
+        SHOW_PROGRESS
+        )
+    file(DOWNLOAD
+        "${SF_CORPORATE_DESIGN_URL}/sf_footer.html"
+        ${PROJECT_BINARY_DIR}/sf_footer.html
+        SHOW_PROGRESS
+        )
+    file(DOWNLOAD
+        "${SF_CORPORATE_DESIGN_URL}/sf_header.html"
+        ${PROJECT_BINARY_DIR}/sf_header.html
+        SHOW_PROGRESS
+        )
+    file(DOWNLOAD
+        "${SF_CORPORATE_DESIGN_URL}/stackforce_logo.svg"
+        ${PROJECT_BINARY_DIR}/stackforce_logo.svg
+        SHOW_PROGRESS
+        )
+
+    set(SF_PROJECT_LOGO ${PROJECT_BINARY_DIR}/stackforce_logo.svg)
+    string(CONCAT SF_HTML_EXTRA_STYLESHEET ${SF_HTML_EXTRA_STYLESHEET} " "
+        ${PROJECT_BINARY_DIR}/bootstrap.min.css)
+    string(CONCAT SF_HTML_EXTRA_STYLESHEET ${SF_HTML_EXTRA_STYLESHEET} " "
+        ${PROJECT_BINARY_DIR}/sf_stylesheet.css)
+    set(SF_HTML_HEADER ${PROJECT_BINARY_DIR}/sf_header.html)
+    set(SF_HTML_FOOTER ${PROJECT_BINARY_DIR}/sf_footer.html)
+
+    configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in
+        ${PROJECT_BINARY_DIR}/Doxyfile @ONLY)
+
+    add_custom_target(doc
+        ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen" VERBATIM
+        SOURCES ${PROJECT_BINARY_DIR}/Doxyfile)
+
+    install(DIRECTORY ${PROJECT_BINARY_DIR}/doc/html DESTINATION share/doc)
+endif()
 
 #---------------------------------------------------------------------------------------
 # LINKING
@@ -114,6 +157,6 @@ target_link_libraries(serialmac crc)
 #---------------------------------------------------------------------------------------
 # INSTALLATION
 #---------------------------------------------------------------------------------------
-install (TARGETS serialmac DESTINATION lib)
-install (FILES ${PROJECT_SOURCE_DIR}/sf_serialmac.h DESTINATION include)
+install(TARGETS serialmac DESTINATION lib)
+install(FILES ${PROJECT_SOURCE_DIR}/sf_serialmac.h DESTINATION include)
 
