@@ -354,13 +354,13 @@ enum sf_serialmac_return sf_serialmac_rx_frame ( struct sf_serialmac_ctx *ctx,
  */
 enum rxTxState {
     /** MAC is idle. */
-    IDLE,
+    SF_SERIALMAC_IDLE,
     /** HEADER is about to be processed. */
-    HEADER,
+    SF_SERIALMAC_HEADER,
     /** PAYLOAD is about to be processed. */
-    PAYLOAD,
+    SF_SERIALMAC_PAYLOAD,
     /** CRC is about to be processed. */
-    CRC,
+    SF_SERIALMAC_CRC,
 };
 
 /**
