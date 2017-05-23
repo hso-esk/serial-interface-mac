@@ -9,28 +9,28 @@
 ##
 ## @file
 ## @copyright  STACKFORCE GmbH, Heitersheim, Germany, http://www.stackforce.de
-## @author     STACKFORCE
+## @author     Adrian Antonana
 ## @brief      STACKFORCE Serial MAC Module
 ##
 ## This file is part of the STACKFORCE Serial MAC Library
-## (below "libserialmac").
+## (below "libsfserialmac").
 ##
-## libserialmac is free software: you can redistribute it and/or modify
+## libsfserialmac is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU Affero General Public License as published by
 ## the Free Software Foundation, either version 3 of the License, or
 ## (at your option) any later version.
 ##
-## libserialmac is distributed in the hope that it will be useful,
+## libsfserialmac is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU Affero General Public License for more details.
 ##
 ## You should have received a copy of the GNU Affero General Public License
-## along with libserialmac.  If not, see <http://www.gnu.org/licenses/>.
+## along with libsfserialmac.  If not, see <http://www.gnu.org/licenses/>.
 ##
-project (serialmac)
 
 cmake_minimum_required (VERSION 3.6)
+project(sfserialmac)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
@@ -91,6 +91,8 @@ target_include_directories(sfserialmac-static INTERFACE
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
 )
 
+target_link_libraries(sfserialmac-static PRIVATE crc-static)
+target_link_libraries(sfserialmac PRIVATE crc)
 
 #---------------------------------------------------------------------------------------
 # DOXYGEN
