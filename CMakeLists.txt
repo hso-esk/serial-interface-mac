@@ -39,11 +39,14 @@ include(CMakePackageConfigHelpers)
 #---------------------------------------------------------------------------------------
 find_package(crc 0.1.2 REQUIRED)
 get_target_property(CRC_INCLUDE_DIRS crc INTERFACE_INCLUDE_DIRECTORIES)
+
 #---------------------------------------------------------------------------------------
 # Options
 #---------------------------------------------------------------------------------------
 option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation" ${DOXYGEN_FOUND})
 
+#---------------------------------------------------------------------------------------
+# Product and version
 #---------------------------------------------------------------------------------------
 set (SERIALMAC_VERSION_MAJOR 0 CACHE STRING "major version")
 set (SERIALMAC_VERSION_MINOR 1 CACHE STRING "minor version")
@@ -52,8 +55,9 @@ set (SERIALMAC_PRODUCT_COMPANY "STACKFORCE" CACHE STRING "company")
 set (SERIALMAC_PRODUCT_NAME    "Serial MAC" CACHE STRING "product")
 set (SERIALMAC_VERSION ${SERIALMAC_VERSION_MAJOR}.${SERIALMAC_VERSION_MINOR}.${SERIALMAC_VERSION_PATCH})
 
-# configure a header file to pass some of the CMake settings
-# to the source code
+#---------------------------------------------------------------------------------------
+# Serialmac headers and sources
+#---------------------------------------------------------------------------------------
 set(SERIALMAC_SOURCES
     ${PROJECT_SOURCE_DIR}/sf_serialmac.c
 )
