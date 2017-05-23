@@ -155,8 +155,32 @@ endif()
 target_link_libraries(serialmac crc)
 
 #---------------------------------------------------------------------------------------
+# Create debian package
 # INSTALLATION
 #---------------------------------------------------------------------------------------
+set(CPACK_GENERATOR "DEB")
+
+# check if command dpkg is available
+find_program(DPKG_CMD dpkg)
+if(DPKG_CMD)
+    message(STATUS "DEB Generator: Found dpkg: ${DPKG_CMD}")
+else()
+    message(FATAL_ERROR "DEB Generator: dpkg not found")
+endif()
+
+set(CPACK_PACKAGE_DIRECTORY ${CMAKE_BINARY_DIR}/packages)
+message(STATUS "DEB Generator: debian packages will be generated under ${CPACK_PACKAGE_DIRECTORY}")
+set(CPACK_DEBIAN_PACKAGE_NAME "lib${PROJECT_NAME}")
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "STACKFORCE serialmac")
+set(CPACK_PACKAGE_VENDOR "STACKFORCE GmbH")
+set(CPACK_PACKAGE_CONTACT "info@stackforce.de")
+set(CPACK_DEBIAN_PACKAGE_VERSION ${SERIALMAC_VERSION})
+set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
+set(CPACK_STRIP_FILES TRUE)
+set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE")
 install(TARGETS serialmac DESTINATION lib)
 install(FILES ${PROJECT_SOURCE_DIR}/sf_serialmac.h DESTINATION include)
 
+include(CPack)
