@@ -40,6 +40,11 @@ include(CMakePackageConfigHelpers)
 find_package(crc 0.1.2 REQUIRED)
 get_target_property(CRC_INCLUDE_DIRS crc INTERFACE_INCLUDE_DIRECTORIES)
 #---------------------------------------------------------------------------------------
+# Options
+#---------------------------------------------------------------------------------------
+option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation" ${DOXYGEN_FOUND})
+
+#---------------------------------------------------------------------------------------
 set (SERIALMAC_VERSION_MAJOR 0 CACHE STRING "major version")
 set (SERIALMAC_VERSION_MINOR 1 CACHE STRING "minor version")
 set (SERIALMAC_VERSION_PATCH 2 CACHE STRING "patch version")
