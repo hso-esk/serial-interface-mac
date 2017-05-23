@@ -50,25 +50,30 @@ configure_file(
     )
 
 #---------------------------------------------------------------------------------------
-# TARGET
+# Serialmac targets
 #---------------------------------------------------------------------------------------
-set (SERIALMAC_SOURCES
-     ${PROJECT_SOURCE_DIR}/sf_serialmac.c
-     )
+add_library(sfserialmac_o OBJECT ${SERIALMAC_SOURCES})
+add_library(sfserialmac SHARED $<TARGET_OBJECTS:sfserialmac_o>)
+add_library(sfserialmac-static STATIC $<TARGET_OBJECTS:sfserialmac_o>)
 
-# Build static libraries only
-option(BUILD_SHARED_LIBS "Set to ON to build shared libraries" OFF)
+target_include_directories(sfserialmac_o PRIVATE ${CRC_INCLUDE_DIRS})
 
-add_library(serialmac ${SERIALMAC_SOURCES})
+set_target_properties(sfserialmac_o PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+set_target_properties(sfserialmac PROPERTIES VERSION ${SERIALMAC_VERSION})
+set_target_properties(sfserialmac-static PROPERTIES VERSION ${SERIALMAC_VERSION})
+set_target_properties(sfserialmac PROPERTIES OUTPUT_NAME sfserialmac)
+set_target_properties(sfserialmac-static PROPERTIES OUTPUT_NAME sfserialmac)
 
-target_include_directories(serialmac PUBLIC ${PROJECT_SOURCE_DIR}
-                                            ${PROJECT_BINARY_DIR})
+target_include_directories(sfserialmac INTERFACE
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/sfserialmac>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
+)
 
-# NOTE target_include_directories(PUBLIC) is not enough to get Kdevelop
-# to find the includes, hence the are defined again with INTERFACE_INCLUDE_DIRECTORIES
-set_target_properties(serialmac PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}
-    VERSION  ${SERIALMAC_VERSION}
+target_include_directories(sfserialmac-static INTERFACE
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/sfserialmac>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
 )
 
 #---------------------------------------------------------------------------------------
