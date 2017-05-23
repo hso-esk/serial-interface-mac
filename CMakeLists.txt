@@ -54,10 +54,15 @@ set (SERIALMAC_VERSION ${SERIALMAC_VERSION_MAJOR}.${SERIALMAC_VERSION_MINOR}.${S
 
 # configure a header file to pass some of the CMake settings
 # to the source code
+set(SERIALMAC_SOURCES
+    ${PROJECT_SOURCE_DIR}/sf_serialmac.c
+)
+
+# configure version header
 configure_file(
     ${PROJECT_SOURCE_DIR}/version.h.in
     ${PROJECT_BINARY_DIR}/version.h
-    )
+)
 
 #---------------------------------------------------------------------------------------
 # Serialmac targets
