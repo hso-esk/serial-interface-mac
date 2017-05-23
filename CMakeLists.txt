@@ -33,7 +33,10 @@ project (serialmac)
 cmake_minimum_required (VERSION 3.6)
 
 #---------------------------------------------------------------------------------------
-# PRODUCT AND VERSION
+# Find required packages
+#---------------------------------------------------------------------------------------
+find_package(crc 0.1.2 REQUIRED)
+get_target_property(CRC_INCLUDE_DIRS crc INTERFACE_INCLUDE_DIRECTORIES)
 #---------------------------------------------------------------------------------------
 set (SERIALMAC_VERSION_MAJOR 0 CACHE STRING "major version")
 set (SERIALMAC_VERSION_MINOR 1 CACHE STRING "minor version")
@@ -76,10 +79,6 @@ target_include_directories(sfserialmac-static INTERFACE
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
 )
 
-#---------------------------------------------------------------------------------------
-# CRC
-#---------------------------------------------------------------------------------------
-add_subdirectory(${PROJECT_SOURCE_DIR}/dep/crc crc)
 
 #---------------------------------------------------------------------------------------
 # DOXYGEN
