@@ -39,8 +39,8 @@ include(CMakePackageConfigHelpers)
 #---------------------------------------------------------------------------------------
 # Find required packages
 #---------------------------------------------------------------------------------------
-find_package(crc 0.1.2 REQUIRED)
-get_target_property(CRC_INCLUDE_DIRS crc INTERFACE_INCLUDE_DIRECTORIES)
+find_package(sfcrc 0.1.2 REQUIRED)
+get_target_property(CRC_INCLUDE_DIRS sfcrc INTERFACE_INCLUDE_DIRECTORIES)
 
 #---------------------------------------------------------------------------------------
 # Options
@@ -97,8 +97,8 @@ target_include_directories(sfserialmac-static INTERFACE
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
 )
 
-target_link_libraries(sfserialmac-static PRIVATE crc-static)
-target_link_libraries(sfserialmac PRIVATE crc)
+target_link_libraries(sfserialmac-static PUBLIC sfcrc-static)
+target_link_libraries(sfserialmac PUBLIC sfcrc)
 
 #---------------------------------------------------------------------------------------
 # DOXYGEN
