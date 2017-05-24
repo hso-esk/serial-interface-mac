@@ -108,9 +108,6 @@ option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation 
 
 if(BUILD_DOCUMENTATION)
     find_package(Doxygen 1.8.13 REQUIRED)
-    if(NOT DOXYGEN_FOUND)
-        message(FATAL_ERROR "Doxygen 1.8.13 is needed to build the documentation.")
-    endif()
 
     get_target_property( DOXYGEN_INPUT_SERIALMAC serialmac INCLUDE_DIRECTORIES)
     get_target_property( DOXYGEN_INPUT_CRC crc INCLUDE_DIRECTORIES)
