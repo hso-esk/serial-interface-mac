@@ -101,9 +101,8 @@ target_link_libraries(sfserialmac-static PUBLIC sfcrc-static)
 target_link_libraries(sfserialmac PUBLIC sfcrc)
 
 #---------------------------------------------------------------------------------------
-# DOXYGEN
+# Doxygen documentation generation
 #---------------------------------------------------------------------------------------
-#add a target to generate API documentation with Doxygen
 
 if(BUILD_DOCUMENTATION)
     find_package(Doxygen 1.8.13 REQUIRED)
