@@ -9,7 +9,9 @@
 ##
 ## @file
 ## @copyright  STACKFORCE GmbH, Heitersheim, Germany, http://www.stackforce.de
+## @author     Lars Moellendorf
 ## @author     Adrian Antonana
+## @author     Johannes Bruder
 ## @brief      STACKFORCE Serial MAC Module
 ##
 ## This file is part of the STACKFORCE Serial MAC Library
