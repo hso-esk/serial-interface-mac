@@ -159,11 +159,12 @@ if(BUILD_DOCUMENTATION)
     configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in
         ${PROJECT_BINARY_DIR}/Doxyfile @ONLY)
 
-    add_custom_target(doc
+    add_custom_target(doc ALL
         ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         COMMENT "Generating API documentation with Doxygen" VERBATIM
-        SOURCES ${PROJECT_BINARY_DIR}/Doxyfile)
+        SOURCES ${PROJECT_BINARY_DIR}/Doxyfile
+    )
 
     install(DIRECTORY ${PROJECT_BINARY_DIR}/doc/html DESTINATION ${CMAKE_INSTALL_DATADIR}/doc/${PROJECT_NAME})
 endif()
