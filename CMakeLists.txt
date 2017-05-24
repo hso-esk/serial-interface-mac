@@ -108,6 +108,11 @@ target_link_libraries(sfserialmac PUBLIC sfcrc)
 if(BUILD_DOCUMENTATION)
     find_package(Doxygen 1.8.13 REQUIRED)
 
+    # variables for use by generic doxygen configuration file
+    set(DOXYGEN_PRODUCT_NAME "${SERIALMAC_PRODUCT_NAME}")
+    set(DOXYGEN_PROJECT_NUMBER "${SERIALMAC_VERSION}")
+    set(DOXYGEN_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/doc)
+    set(DOXYGEN_CUSTOM_RESOURCES_DIR ${PROJECT_BINARY_DIR}/doxygen)
     get_target_property( DOXYGEN_INPUT_SERIALMAC serialmac INCLUDE_DIRECTORIES)
     get_target_property( DOXYGEN_INPUT_CRC crc INCLUDE_DIRECTORIES)
     set( DOXYGEN_INPUT ${DOXYGEN_INPUT_SERIALMAC}
