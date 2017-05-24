@@ -121,32 +121,53 @@ if(BUILD_DOCUMENTATION)
 
     set(SF_CORPORATE_DESIGN_URL "INSERT_HERE_THE_URL")
     message(STATUS "Download files for STACKFORCE corporate design:")
-    file(DOWNLOAD
-        "${SF_CORPORATE_DESIGN_URL}/bootstrap.min.css"
-        ${PROJECT_BINARY_DIR}/bootstrap.min.css
-        SHOW_PROGRESS
-        )
-    file(DOWNLOAD
-        "${SF_CORPORATE_DESIGN_URL}/sf_stylesheet.css"
-        ${PROJECT_BINARY_DIR}/sf_stylesheet.css
-        SHOW_PROGRESS
-        )
-    file(DOWNLOAD
-        "${SF_CORPORATE_DESIGN_URL}/sf_footer.html"
-        ${PROJECT_BINARY_DIR}/sf_footer.html
-        SHOW_PROGRESS
-        )
-    file(DOWNLOAD
-        "${SF_CORPORATE_DESIGN_URL}/sf_header.html"
-        ${PROJECT_BINARY_DIR}/sf_header.html
-        SHOW_PROGRESS
-        )
-    file(DOWNLOAD
-        "${SF_CORPORATE_DESIGN_URL}/stackforce_logo.svg"
-        ${PROJECT_BINARY_DIR}/stackforce_logo.svg
-        SHOW_PROGRESS
-        )
-    configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in
+#     file(DOWNLOAD
+#         "${SF_CORPORATE_DESIGN_URL}/bootstrap.min.css"
+#         ${PROJECT_BINARY_DIR}/bootstrap.min.css
+#         SHOW_PROGRESS
+#         )
+#     file(DOWNLOAD
+#         "${SF_CORPORATE_DESIGN_URL}/sf_stylesheet.css"
+#         ${PROJECT_BINARY_DIR}/sf_stylesheet.css
+#         SHOW_PROGRESS
+#         )
+#     file(DOWNLOAD
+#         "${SF_CORPORATE_DESIGN_URL}/sf_footer.html"
+#         ${PROJECT_BINARY_DIR}/sf_footer.html
+#         SHOW_PROGRESS
+#         )
+#     file(DOWNLOAD
+#         "${SF_CORPORATE_DESIGN_URL}/sf_header.html"
+#         ${PROJECT_BINARY_DIR}/sf_header.html
+#         SHOW_PROGRESS
+#         )
+#     file(DOWNLOAD
+#         "${SF_CORPORATE_DESIGN_URL}/stackforce_logo.svg"
+#         ${PROJECT_BINARY_DIR}/stackforce_logo.svg
+#         SHOW_PROGRESS
+#         )
+
+    file(COPY "${SF_CORPORATE_DESIGN_URL}/bootstrap.min.css"
+        DESTINATION ${DOXYGEN_CUSTOM_RESOURCES_DIR}
+    )
+
+    file(COPY "${SF_CORPORATE_DESIGN_URL}/sf_stylesheet.css"
+        DESTINATION ${DOXYGEN_CUSTOM_RESOURCES_DIR}
+    )
+
+    file(COPY "${SF_CORPORATE_DESIGN_URL}/sf_footer.html"
+        DESTINATION ${DOXYGEN_CUSTOM_RESOURCES_DIR}
+    )
+
+    file(COPY "${SF_CORPORATE_DESIGN_URL}/sf_header.html"
+        DESTINATION ${DOXYGEN_CUSTOM_RESOURCES_DIR}
+    )
+
+    file(COPY "${SF_CORPORATE_DESIGN_URL}/stackforce_logo.svg"
+        DESTINATION ${DOXYGEN_CUSTOM_RESOURCES_DIR}
+    )
+
+    configure_file(${SF_CORPORATE_DESIGN_URL}/Doxyfile.in
         ${PROJECT_BINARY_DIR}/Doxyfile @ONLY)
 
     add_custom_target(doc ALL
