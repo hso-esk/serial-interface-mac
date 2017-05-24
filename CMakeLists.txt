@@ -118,7 +118,7 @@ if(BUILD_DOCUMENTATION)
     string(APPEND DOXYGEN_INPUT ${PROJECT_SOURCE_DIR} " ")
     string(APPEND DOXYGEN_INPUT ${PROJECT_BINARY_DIR})
 
-    message(STATUS "doxyfile input: ${DOXYFILE_INPUT}")
+    message(STATUS "doxyfile input: ${DOXYGEN_INPUT}")
 
     set(SF_CORPORATE_DESIGN_URL "INSERT_HERE_THE_URL")
     message(STATUS "Download files for STACKFORCE corporate design:")
