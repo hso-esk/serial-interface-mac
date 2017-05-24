@@ -104,10 +104,10 @@ target_link_libraries(sfserialmac PUBLIC sfcrc)
 # DOXYGEN
 #---------------------------------------------------------------------------------------
 #add a target to generate API documentation with Doxygen
-find_package(Doxygen 1.8.13 )
 option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen 1.8.13)" ${DOXYGEN_FOUND})
 
 if(BUILD_DOCUMENTATION)
+    find_package(Doxygen 1.8.13 REQUIRED)
     if(NOT DOXYGEN_FOUND)
         message(FATAL_ERROR "Doxygen 1.8.13 is needed to build the documentation.")
     endif()
