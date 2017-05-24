@@ -170,7 +170,7 @@ if(BUILD_DOCUMENTATION)
         COMMENT "Generating API documentation with Doxygen" VERBATIM
         SOURCES ${PROJECT_BINARY_DIR}/Doxyfile)
 
-    install(DIRECTORY ${PROJECT_BINARY_DIR}/doc/html DESTINATION share/doc)
+    install(DIRECTORY ${PROJECT_BINARY_DIR}/doc/html DESTINATION ${CMAKE_INSTALL_DATADIR}/doc/${PROJECT_NAME})
 endif()
 
 #---------------------------------------------------------------------------------------
