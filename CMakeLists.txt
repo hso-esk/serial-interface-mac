@@ -147,15 +147,6 @@ if(BUILD_DOCUMENTATION)
         ${PROJECT_BINARY_DIR}/stackforce_logo.svg
         SHOW_PROGRESS
         )
-
-    set(SF_PROJECT_LOGO ${PROJECT_BINARY_DIR}/stackforce_logo.svg)
-    string(CONCAT SF_HTML_EXTRA_STYLESHEET ${SF_HTML_EXTRA_STYLESHEET} " "
-        ${PROJECT_BINARY_DIR}/bootstrap.min.css)
-    string(CONCAT SF_HTML_EXTRA_STYLESHEET ${SF_HTML_EXTRA_STYLESHEET} " "
-        ${PROJECT_BINARY_DIR}/sf_stylesheet.css)
-    set(SF_HTML_HEADER ${PROJECT_BINARY_DIR}/sf_header.html)
-    set(SF_HTML_FOOTER ${PROJECT_BINARY_DIR}/sf_footer.html)
-
     configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in
         ${PROJECT_BINARY_DIR}/Doxyfile @ONLY)
 
