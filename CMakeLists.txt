@@ -37,9 +37,14 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 #---------------------------------------------------------------------------------------
+# Required dependencies versions
+#---------------------------------------------------------------------------------------
+set(SFCRC_VERSION 0.1.2)
+
+#---------------------------------------------------------------------------------------
 # Find required packages
 #---------------------------------------------------------------------------------------
-find_package(sfcrc 0.1.2 REQUIRED)
+find_package(sfcrc ${SFCRC_VERSION} REQUIRED)
 get_target_property(CRC_INCLUDE_DIRS sfcrc INTERFACE_INCLUDE_DIRECTORIES)
 
 #---------------------------------------------------------------------------------------
