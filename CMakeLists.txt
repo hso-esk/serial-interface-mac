@@ -117,6 +117,7 @@ if(BUILD_DOCUMENTATION)
     set(DOXYGEN_PROJECT_NUMBER "${SERIALMAC_VERSION}")
     set(DOXYGEN_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/doc)
     set(DOXYGEN_CUSTOM_RESOURCES_DIR ${PROJECT_BINARY_DIR}/doxygen)
+    set(DOWNLOADED_MODUELES_DIR ${PROJECT_BINARY_DIR}/cmake)
 
     string(APPEND DOXYGEN_INPUT ${PROJECT_SOURCE_DIR}/README.md " ")
     string(APPEND DOXYGEN_INPUT ${PROJECT_SOURCE_DIR} " ")
@@ -124,55 +125,51 @@ if(BUILD_DOCUMENTATION)
 
     message(STATUS "doxyfile input: ${DOXYGEN_INPUT}")
 
-    set(SF_CORPORATE_DESIGN_URL "INSERT_HERE_THE_URL")
-    message(STATUS "Download files for STACKFORCE corporate design:")
-#     file(DOWNLOAD
-#         "${SF_CORPORATE_DESIGN_URL}/bootstrap.min.css"
-#         ${PROJECT_BINARY_DIR}/bootstrap.min.css
-#         SHOW_PROGRESS
-#         )
-#     file(DOWNLOAD
-#         "${SF_CORPORATE_DESIGN_URL}/sf_stylesheet.css"
-#         ${PROJECT_BINARY_DIR}/sf_stylesheet.css
-#         SHOW_PROGRESS
-#         )
-#     file(DOWNLOAD
-#         "${SF_CORPORATE_DESIGN_URL}/sf_footer.html"
-#         ${PROJECT_BINARY_DIR}/sf_footer.html
-#         SHOW_PROGRESS
-#         )
-#     file(DOWNLOAD
-#         "${SF_CORPORATE_DESIGN_URL}/sf_header.html"
-#         ${PROJECT_BINARY_DIR}/sf_header.html
-#         SHOW_PROGRESS
-#         )
-#     file(DOWNLOAD
-#         "${SF_CORPORATE_DESIGN_URL}/stackforce_logo.svg"
-#         ${PROJECT_BINARY_DIR}/stackforce_logo.svg
-#         SHOW_PROGRESS
-#         )
+    set(SF_CORPORATE_DESIGN_URL "https://raw.githubusercontent.com/stackforce/corporate-design-doxygen/develop")
+    message(STATUS "Download files for STACKFORCE doxygen corporate design:")
 
-    file(COPY "${SF_CORPORATE_DESIGN_URL}/bootstrap.min.css"
-        DESTINATION ${DOXYGEN_CUSTOM_RESOURCES_DIR}
+    file(DOWNLOAD
+        "${SF_CORPORATE_DESIGN_URL}/cmake/DoxygenRequiredVersion.cmake"
+        "${DOWNLOADED_MODUELES_DIR}/DoxygenRequiredVersion.cmake"
+        SHOW_PROGRESS
     )
 
-    file(COPY "${SF_CORPORATE_DESIGN_URL}/sf_stylesheet.css"
-        DESTINATION ${DOXYGEN_CUSTOM_RESOURCES_DIR}
-    )
+    file(DOWNLOAD
+        "${SF_CORPORATE_DESIGN_URL}/Doxyfile.in"
+        "${DOXYGEN_CUSTOM_RESOURCES_DIR}/Doxyfile.in"
+        SHOW_PROGRESS
+        )
 
-    file(COPY "${SF_CORPORATE_DESIGN_URL}/sf_footer.html"
-        DESTINATION ${DOXYGEN_CUSTOM_RESOURCES_DIR}
-    )
+    file(DOWNLOAD
+        "${SF_CORPORATE_DESIGN_URL}/bootstrap.min.css"
+        "${DOXYGEN_CUSTOM_RESOURCES_DIR}/bootstrap.min.css"
+        SHOW_PROGRESS
+        )
+    file(DOWNLOAD
+        "${SF_CORPORATE_DESIGN_URL}/sf_stylesheet.css"
+        "${DOXYGEN_CUSTOM_RESOURCES_DIR}/sf_stylesheet.css"
+        SHOW_PROGRESS
+        )
+    file(DOWNLOAD
+        "${SF_CORPORATE_DESIGN_URL}/sf_footer.html"
+        "${DOXYGEN_CUSTOM_RESOURCES_DIR}/sf_footer.html"
+        SHOW_PROGRESS
+        )
+    file(DOWNLOAD
+        "${SF_CORPORATE_DESIGN_URL}/sf_header.html"
+        "${DOXYGEN_CUSTOM_RESOURCES_DIR}/sf_header.html"
+        SHOW_PROGRESS
+        )
+    file(DOWNLOAD
+        "${SF_CORPORATE_DESIGN_URL}/stackforce_logo.svg"
+        "${DOXYGEN_CUSTOM_RESOURCES_DIR}/stackforce_logo.svg"
+        SHOW_PROGRESS
+        )
 
-    file(COPY "${SF_CORPORATE_DESIGN_URL}/sf_header.html"
-        DESTINATION ${DOXYGEN_CUSTOM_RESOURCES_DIR}
-    )
+    list(APPEND CMAKE_MODULE_PATH ${DOWNLOADED_MODUELES_DIR})
+    include(DoxygenRequiredVersion)
 
-    file(COPY "${SF_CORPORATE_DESIGN_URL}/stackforce_logo.svg"
-        DESTINATION ${DOXYGEN_CUSTOM_RESOURCES_DIR}
-    )
-
-    configure_file(${SF_CORPORATE_DESIGN_URL}/Doxyfile.in
+    configure_file(${DOXYGEN_CUSTOM_RESOURCES_DIR}/Doxyfile.in
         ${PROJECT_BINARY_DIR}/Doxyfile @ONLY)
 
     add_custom_target(doc ALL
