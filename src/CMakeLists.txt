@@ -239,8 +239,9 @@ execute_process(COMMAND uname -m OUTPUT_VARIABLE MACHINE_ARCH OUTPUT_STRIP_TRAIL
 # default CPack generators
 set(CPACK_GENERATOR TGZ STGZ)
 
+# extra CPack generators
 if(LINUX_DISTRO STREQUAL "Debian" OR LINUX_DISTRO STREQUAL "Ubuntu" OR LINUX_DISTRO STREQUAL "LinuxMint")
-    set(CPACK_GENERATOR "DEB;TGZ")
+    list(APPEND CPACK_GENERATOR DEB)
 endif()
 
 # general CPack config
