@@ -111,7 +111,7 @@ if(BUILD_DOCUMENTATION)
     find_package(Doxygen 1.8.13 REQUIRED)
 
     # variables for use by generic doxygen configuration file
-    set(DOXYGEN_PRODUCT_NAME "${SERIALMAC_PRODUCT_NAME}")
+    set(DOXYGEN_PRODUCT_NAME "${PROJECT_PRODUCT_NAME}")
     set(DOXYGEN_PROJECT_NUMBER "${PROJECT_VERSION}")
     set(DOXYGEN_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/doc)
     set(DOXYGEN_CUSTOM_RESOURCES_DIR ${PROJECT_BINARY_DIR}/doxygen)
