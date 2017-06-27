@@ -118,7 +118,7 @@ if(BUILD_DOC)
     set(DOXYGEN_CUSTOM_RESOURCES_DIR ${PROJECT_BINARY_DIR}/doxygen)
     set(DOWNLOADED_MODUELES_DIR ${PROJECT_BINARY_DIR}/cmake)
 
-	string(APPEND DOXYGEN_INPUT ${PROJECT_SOURCE_DIR}/README.md " ")
+    string(APPEND DOXYGEN_INPUT ${PROJECT_SOURCE_DIR}/README.md " ")
     string(APPEND DOXYGEN_INPUT ${CMAKE_CURRENT_LIST_DIR} " ")
     string(APPEND DOXYGEN_INPUT ${PROJECT_BINARY_DIR})
 
@@ -137,39 +137,45 @@ if(BUILD_DOC)
         "${SF_CORPORATE_DESIGN_URL}/Doxyfile.in"
         "${DOXYGEN_CUSTOM_RESOURCES_DIR}/Doxyfile.in"
         SHOW_PROGRESS
-	)
+    )
 
     file(DOWNLOAD
         "${SF_CORPORATE_DESIGN_URL}/bootstrap.min.css"
         "${DOXYGEN_CUSTOM_RESOURCES_DIR}/bootstrap.min.css"
         SHOW_PROGRESS
-	)
+    )
     file(DOWNLOAD
         "${SF_CORPORATE_DESIGN_URL}/sf_stylesheet.css"
         "${DOXYGEN_CUSTOM_RESOURCES_DIR}/sf_stylesheet.css"
         SHOW_PROGRESS
-	)
+    )
     file(DOWNLOAD
         "${SF_CORPORATE_DESIGN_URL}/sf_footer.html"
         "${DOXYGEN_CUSTOM_RESOURCES_DIR}/sf_footer.html"
         SHOW_PROGRESS
-	)
+    )
     file(DOWNLOAD
         "${SF_CORPORATE_DESIGN_URL}/sf_header.html"
         "${DOXYGEN_CUSTOM_RESOURCES_DIR}/sf_header.html"
         SHOW_PROGRESS
-	)
+    )
     file(DOWNLOAD
         "${SF_CORPORATE_DESIGN_URL}/stackforce_logo.svg"
         "${DOXYGEN_CUSTOM_RESOURCES_DIR}/stackforce_logo.svg"
         SHOW_PROGRESS
-	)
+    )
 
     list(APPEND CMAKE_MODULE_PATH ${DOWNLOADED_MODUELES_DIR})
     include(DoxygenRequiredVersion)
 
     configure_file(${DOXYGEN_CUSTOM_RESOURCES_DIR}/Doxyfile.in
-        ${PROJECT_BINARY_DIR}/Doxyfile @ONLY)
+        ${PROJECT_BINARY_DIR}/Doxyfile @ONLY
+    )
+
+    # set the readme file as mainpage
+    file(APPEND ${PROJECT_BINARY_DIR}/Doxyfile
+        "USE_MDFILE_AS_MAINPAGE = README.md\n"
+    )
 
     add_custom_target(doc ALL
         ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
