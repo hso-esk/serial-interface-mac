@@ -41,8 +41,8 @@ which returns the number of bytes waiting on input.
 
 ## Build instructions
 
-The STACKFORCE Serial MAC uses CMake as build system. However it can be 
-integrated as sources or as library into your own project. How to build:
+The STACKFORCE Serial MAC uses CMake as build system. Note that, once built, the library can be used by other cmake projects with the `find_package()` command without requiring to install the library on the system. Therefore running a `make install` is not mandatory to be able to build other projects that link to the serialmac library.
+
 Go to root, create build directory:
 
     cd serial-interface-mac
@@ -59,6 +59,15 @@ or to define a custom install directory e.g. devroot:
     cmake .. -DCMAKE_INSTALL_PREFIX=devroot
     make
     make install
+
+To generate packages run:
+
+    make package
+
+This will generate a tar.gz archive, and installer shell script by default.
+If run under Ubuntu, Debian or LinuxMint, a debian package will be generated.
+
+    dpkg -i package_name.deb
 
 To generate the doxygen documentation run:
 
