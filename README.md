@@ -1,17 +1,15 @@
-# README                                                             {#mainpage}
-    @code
-
+# README
+```
      ___ _____ _   ___ _  _____ ___  ___  ___ ___
     / __|_   _/_\ / __| |/ / __/ _ \| _ \/ __| __|
     \__ \ | |/ _ \ (__| ' <| _| (_) |   / (__| _|
     |___/ |_/_/ \_\___|_|\_\_| \___/|_|_\\___|___|
     embedded.connectivity.solutions.==============
+```
 
-    @endcode
+# Introduction
 
-# Introduction                                                   {#introduction}
-
-## Purpose                                                            {#purpose}
+## Purpose
 
 The STACKFORCE Serial MAC provides framing for serial interfaces.
 
@@ -20,7 +18,7 @@ before sending them over the serial interface.
 On RX the STACKFORCE Serial MAC listens for incoming frames, verifies their
 CRC and provides the payload to the upper layer.
 
-## Frame format                                                         {#frame}
+## Frame format
 
 The Frame format is:
 
@@ -28,7 +26,7 @@ The Frame format is:
     | SYNC BYTE(S) | LENGTH | payload | CRC |
     +--------------+--------+-- - - --+-----+
 
-## Features                                                           {#feature}
+## Features
 
 The STACKFORCE Serial MAC is written with cross-platform portability in mind.
 It should be usable within operating systems as well as bare metal devices.
@@ -41,10 +39,10 @@ functions to read from and write to the serial interface and a function
 which returns the number of bytes waiting on input.
 * Buffer allocation and management is completely left to the upper layer.
 
-## Build instructions                                                   {#build}
+## Build instructions
 
-The STACKFORCE Serial MAC uses CMake as build system. However it can be 
-integrated as sources or as library into your own project. How to build:
+The STACKFORCE Serial MAC uses CMake as build system. Note that, once built, the library can be used by other cmake projects with the `find_package()` command without requiring to install the library on the system. Therefore running a `make install` is not mandatory to be able to build other projects that link to the serialmac library.
+
 Go to root, create build directory:
 
     cd serial-interface-mac
@@ -55,25 +53,34 @@ and run:
     cmake ..
     make
     sudo make install
-    
+
 or to define a custom install directory e.g. devroot:
 
     cmake .. -DCMAKE_INSTALL_PREFIX=devroot
     make
     make install
-    
+
+To generate packages run:
+
+    make package
+
+This will generate a tar.gz archive, and installer shell script by default.
+If run under Ubuntu, Debian or LinuxMint, a debian package will be generated.
+
+    dpkg -i package_name.deb
+
 To generate the doxygen documentation run:
 
     make doc
 
-# Usage                                                                 {#usage}
+# Usage
 
-## Initialization                                              {#initialization}
+## Initialization
 
 To use the STACKFORCE Serial MAC you have to initialize it using
 sf_serialmac_init()
 
-## Reacting to events                                                  {#events}
+## Reacting to events
 
 The STACKFORCE Serial MAC is event driven. You can use the MAC by calling
 sf_serialmac_entry() periodically.
@@ -82,7 +89,7 @@ Or you can add sf_serialmac_hal_tx_callback() and
 sf_serialmac_hal_rx_callback() as callback function to the corresponding
 serial port events.
 
-## Receiving frames                                                        {#rx}
+## Receiving frames
 
 Whenever the STACKFORCE Serial MAC receives the header of a frame it calls
 the upper layers callback function registered as SF_SERIALMAC_RX_EVENT
@@ -93,7 +100,7 @@ due to CRC error or time out, the upper layer's callback function is called
 which has been registered as SF_SERIALMAC_RX_EVENT rx_event() on
 initialization.
 
-## Transmitting frames                                                     {#tx}
+## Transmitting frames
 
 Frames can be transmitted at once using sf_serialmac_tx_frame(). Or by
 starting a frame with sf_serialmac_tx_frame_start() and successively
