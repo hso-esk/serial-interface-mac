@@ -41,6 +41,7 @@ include(CMakePackageConfigHelpers)
 # Required dependencies versions
 #---------------------------------------------------------------------------------------
 set(SFCRC_VERSION 0.1.2)
+set(DOXYGEN_VERSION 1.8.13)
 
 #---------------------------------------------------------------------------------------
 # Find required packages
@@ -108,7 +109,7 @@ target_link_libraries(sfserialmac PUBLIC sfcrc)
 #---------------------------------------------------------------------------------------
 
 if(BUILD_DOCUMENTATION)
-    find_package(Doxygen 1.8.13 REQUIRED)
+    find_package(Doxygen ${DOXYGEN_VERSION} REQUIRED)
 
     # variables for use by generic doxygen configuration file
     set(DOXYGEN_PRODUCT_NAME "${PROJECT_PRODUCT_NAME}")
