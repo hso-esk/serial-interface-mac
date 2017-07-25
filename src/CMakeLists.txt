@@ -41,7 +41,6 @@ include(CMakePackageConfigHelpers)
 # Required dependencies versions
 #---------------------------------------------------------------------------------------
 set(SFCRC_VERSION 0.1.2)
-set(DOXYGEN_VERSION 1.8.13)
 
 #---------------------------------------------------------------------------------------
 # Find required packages
@@ -52,7 +51,7 @@ get_target_property(CRC_INCLUDE_DIRS sfcrc INTERFACE_INCLUDE_DIRECTORIES)
 #---------------------------------------------------------------------------------------
 # Options
 #---------------------------------------------------------------------------------------
-option(BUILD_DOC "Create and install the HTML based API documentation" ${DOXYGEN_FOUND})
+option(BUILD_DOC "Create and install the HTML based API documentation")
 
 #---------------------------------------------------------------------------------------
 # Product info
@@ -109,7 +108,6 @@ target_link_libraries(sfserialmac PUBLIC sfcrc)
 #---------------------------------------------------------------------------------------
 
 if(BUILD_DOC)
-    find_package(Doxygen ${DOXYGEN_VERSION} REQUIRED)
 
     # variables for use by generic doxygen configuration file
     set(DOXYGEN_PRODUCT_NAME "${PROJECT_PRODUCT_NAME}")
