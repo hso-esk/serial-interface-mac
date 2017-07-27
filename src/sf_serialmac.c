@@ -12,7 +12,7 @@ extern "C"
  * @endcode
  *
  * @file
- * @copyright  STACKFORCE GmbH, Heitersheim, Germany, http://www.stackforce.de
+ * @copyright  STACKFORCE GmbH, Heitersheim, Germany, www.stackforce.de
  * @author     STACKFORCE
  * @author     Lars Möllendorf
  * @brief      STACKFORCE serial command line client (sf)

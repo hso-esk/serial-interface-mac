@@ -8,7 +8,7 @@
 ## @endcode
 ##
 ## @file
-## @copyright  STACKFORCE GmbH, Heitersheim, Germany, http://www.stackforce.de
+## @copyright  STACKFORCE GmbH, Heitersheim, Germany, www.stackforce.de
 ## @author     Lars Moellendorf
 ## @author     Adrian Antonana
 ## @author     Johannes Bruder
