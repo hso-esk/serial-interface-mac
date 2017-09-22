@@ -611,7 +611,7 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
          * or if a whole frame has been processed (also to prevent DOS
          * attacks).
          */
-        && ctx->rxFrame.state != SF_SERIALMAC_IDLE );
+        /*&& ctx->rxFrame.state != SF_SERIALMAC_IDLE*/ );
 
     /** Check for HAL error. */
     if ( bytesWaiting < 0 ) {
