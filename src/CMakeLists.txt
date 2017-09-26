@@ -197,7 +197,7 @@ set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 write_basic_package_version_file(
     ${PROJECT_VERSION_FILE}
     VERSION ${PROJECT_VERSION}
-    COMPATIBILITY AnyNewerVersion
+    COMPATIBILITY SameMajorVersion
 )
 
 # install targets
