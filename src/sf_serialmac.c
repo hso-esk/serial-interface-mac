@@ -12,7 +12,7 @@ extern "C"
  * @endcode
  *
  * @file
- * @copyright  STACKFORCE GmbH, Heitersheim, Germany, http://www.stackforce.de
+ * @copyright  STACKFORCE GmbH, Heitersheim, Germany, www.stackforce.de
  * @author     STACKFORCE
  * @author     Lars Möllendorf
  * @brief      STACKFORCE serial command line client (sf)
@@ -275,6 +275,12 @@ static enum sf_serialmac_return rx ( struct sf_serialmac_ctx *ctx,
     size_t byteToReceive = 0;
     size_t bytesReceived = 0;
 
+    if( buffer->memory == NULL )
+    {
+      /** No buffer assigned. */
+      return SF_SERIALMAC_ERROR_BUFFER;
+    }
+
     byteToReceive = buffer->remains > bytesWaiting ? bytesWaiting :
                     buffer->remains;
     if ( byteToReceive ) {
@@ -294,11 +300,6 @@ static enum sf_serialmac_return rx ( struct sf_serialmac_ctx *ctx,
             buffer->callback ( ctx );
         }
     }
-    else if( buffer->memory == NULL )
-    {
-      /** No buffer assigned. */
-      return SF_SERIALMAC_ERROR_BUFFER;
-    }
 
     return SF_SERIALMAC_SUCCESS;
 }
@@ -310,8 +311,8 @@ static void rxProcHeaderCB ( struct sf_serialmac_ctx *ctx )
     ctx->rxFrame.remains = UINT8_TO_UINT16 ( ctx->rxFrame.headerMemory +
                            SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN );
     /** Inform upper layer that there has been a frame header received */
-    ctx->rx_buffer_event ( ctx, NULL, ctx->rxFrame.remains );
     ctx->rxFrame.state = SF_SERIALMAC_PAYLOAD;
+    ctx->rx_buffer_event ( ctx, NULL, ctx->rxFrame.remains );
 }
 
 

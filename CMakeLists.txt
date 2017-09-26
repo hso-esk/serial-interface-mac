@@ -8,7 +8,7 @@
 ## @endcode
 ##
 ## @file
-## @copyright  STACKFORCE GmbH, Heitersheim, Germany, http://www.stackforce.de
+## @copyright  STACKFORCE GmbH, Heitersheim, Germany, www.stackforce.de
 ## @author     Lars Moellendorf
 ## @author     Adrian Antonana
 ## @author     Johannes Bruder
@@ -32,6 +32,6 @@
 ##
 
 cmake_minimum_required(VERSION 3.6)
-project(sfserialmac VERSION 1.0.0)
+project(sfserialmac VERSION 1.0.1)
 
 add_subdirectory(src)
