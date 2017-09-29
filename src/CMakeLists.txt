@@ -175,6 +175,26 @@ if(BUILD_DOC)
         "USE_MDFILE_AS_MAINPAGE = README.md\n"
     )
 
+    # Omit absolute path descriptions
+    file(APPEND ${PROJECT_BINARY_DIR}/Doxyfile
+        "STRIP_FROM_PATH        = ${CMAKE_SOURCE_DIR}\n"
+    )
+
+    # Ensure that the documentation is build for C code
+    file(APPEND ${PROJECT_BINARY_DIR}/Doxyfile
+        "OPTIMIZE_OUTPUT_FOR_C  = YES\n"
+    )
+
+    # Enhances the readability of structs
+    file(APPEND ${PROJECT_BINARY_DIR}/Doxyfile
+        "INLINE_SIMPLE_STRUCTS  = YES\n"
+    )
+
+    # Omit that comments in C files are present in the documentation.
+    file(APPEND ${PROJECT_BINARY_DIR}/Doxyfile
+        "HIDE_IN_BODY_DOCS  = YES\n"
+    )
+
     add_custom_target(doc ALL
         ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
