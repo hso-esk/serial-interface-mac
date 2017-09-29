@@ -22,9 +22,9 @@ CRC and provides the payload to the upper layer.
 
 The Frame format is:
 
-    +--------------+--------+-- - - --+-----+
-    | SYNC BYTE(S) | LENGTH | payload | CRC |
-    +--------------+--------+-- - - --+-----+
+    +--------------+--------+-----------------+-- - - --+-----+
+    | SYNC BYTE(S) | LENGTH | INVERTED LENGTH | payload | CRC |
+    +--------------+--------+-----------------+-- - - --+-----+
 
 ## Features
 
