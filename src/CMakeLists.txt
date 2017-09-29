@@ -122,7 +122,7 @@ if(BUILD_DOC)
 
     message(STATUS "doxyfile input: ${DOXYGEN_INPUT}")
 
-    set(SF_CORPORATE_DESIGN_URL "https://raw.githubusercontent.com/stackforce/corporate-design-doxygen/develop")
+    set(SF_CORPORATE_DESIGN_URL "https://raw.githubusercontent.com/stackforce/corporate-design-doxygen/master")
     message(STATUS "Download files for STACKFORCE doxygen corporate design:")
 
     file(DOWNLOAD
