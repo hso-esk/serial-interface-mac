@@ -189,7 +189,7 @@ enum sf_serialmac_return sf_serialmac_reset ( struct sf_serialmac_ctx *ctx );
  *         - SF_SERIALMAC_ERROR_HAL_ERROR: The HAL reported an error.
  *         - SF_SERIALMAC_ERROR_HAL_BUSY: The HAL is busy.
  *         - SF_SERIALMAC_ERROR_HAL_SLOW: The HAL is busy, but you may retry
- *                                        immediatly (Workaround for slow HALs).
+ *                                        immediately (Workaround for slow HALs).
  *         - SF_SERIALMAC_SUCCESS: The payload buffer has been processed.
  *         - SF_SERIALMAC_ERROR_EXCEPTION: You hit a bug.
  */
@@ -380,7 +380,7 @@ struct sf_serialmac_buffer {
     size_t length;
     /** Bytes that still needs to be processed. */
     size_t remains;
-    /** Function to be called when all bytes are proccessed. */
+    /** Function to be called when all bytes are processed. */
     SF_SERIALMAC_BUF_EVT callback;
 };
 
