@@ -17,9 +17,8 @@ extern "C"
  * @author     Lars Möllendorf
  * @brief      STACKFORCE serial command line client (sf)
  *
- * @details Please consult the
- * @ref introduction "README" for a general overview and
- * @ref usage "how to use" the STACKFORCE Serial MAC.
+ * @details Please consult the "README" for a general overview
+ * of the STACKFORCE Serial MAC.
  *
  * This file is part of the STACKFORCE Serial MAC Library
  * (below "libserialmac").

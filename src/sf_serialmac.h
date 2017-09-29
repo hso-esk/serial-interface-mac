@@ -17,9 +17,8 @@ extern "C"
  * @author     Lars Möllendorf
  * @brief      STACKFORCE Serial MAC Module
  *
- * @details Please consult the
- * @ref introduction "README" for a general overview and
- * @ref usage "how to use" the STACKFORCE Serial MAC.
+ * @details Please consult the "README" for a general overview
+ * of the STACKFORCE Serial MAC.
  *
  * This file is part of the STACKFORCE Serial MAC Library
  * (below "libserialmac").
@@ -88,20 +87,20 @@ struct sf_serialmac_ctx;
 
 /**
  * Signature of HAL's read function to be used by the MAC for RX.
- * This has to be passed on @ref initialization to sf_serialmac_init().
+ * This has to be passed on initialization to @ref sf_serialmac_init().
  */
 typedef size_t ( *SF_SERIALMAC_HAL_READ_FUNCTION ) ( void *port_handle,
         uint8_t *frame_buffer, size_t frame_buffer_length );
 /**
  * Signature of HAL's function which returns the number of bytes waiting on
  * input to be used by the MAC for RX.
- * This has to be passed on @ref initialization to sf_serialmac_init().
+ * This has to be passed on initialization to @ref sf_serialmac_init().
  */
 typedef size_t ( *SF_SERIALMAC_HAL_READ_WAIT_FUNCTION ) ( void *port_handle );
 
 /**
  * Signature of HAL's write function to be used by the MAC for TX.
- * This has to be passed on @ref initialization to sf_serialmac_init().
+ * This has to be passed on initialization to @ref sf_serialmac_init().
  *
  * @param port_handle Points to the port handle that may be needed by the HAL.
  * @param frame_buffer Points to the buffer that has to be written.
@@ -114,8 +113,8 @@ typedef size_t ( *SF_SERIALMAC_HAL_WRITE_FUNCTION ) ( void *port_handle,
 /**
  * Signature of upper layer's callback functions to be called by the MAC
  * on events.
- * These functions have to be passed on @ref initialization to
- * sf_serialmac_init().
+ * These functions have to be passed on initialization to
+ * @ref sf_serialmac_init().
  */
 typedef void ( *SF_SERIALMAC_EVENT ) ( void *mac_context,
                                        uint8_t *frame_buffer,
@@ -125,9 +124,9 @@ typedef void ( *SF_SERIALMAC_EVENT ) ( void *mac_context,
 /**
  * Returns the size of the MAC context structure.
  *
- * On @ref initialization the upper layer has to provide memory the STACKFORCE
+ * On initialization the upper layer has to provide memory the STACKFORCE
  * Serial MAC uses to store its context into. This is done by passing a pointer
- * memory allocated by the upper layer to sf_serialmac_init(). This function
+ * memory allocated by the upper layer to @ref sf_serialmac_init(). This function
  * returns the size of memory that has to be provided.
  *
  * @return The size of the MAC context structure.
