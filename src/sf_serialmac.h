@@ -41,9 +41,9 @@ extern "C"
 #ifndef __STACKFORCE_SERIALMAC_H_
 #define __STACKFORCE_SERIALMAC_H_
 
-/** definition of portable data types */
+/* Definition of portable data types */
 #include <stdint.h>
-/** This API makes use of size_t */
+/* This API makes use of size_t */
 #include <stddef.h>
 
 /**
