@@ -229,7 +229,7 @@ void sf_serialmac_entry ( struct sf_serialmac_ctx *ctx );
  *
  * This is a non-blocking function.
  *
- * Use sf_serialmac_txFrameAppend() to append payload data.
+ * Use sf_serialmac_tx_frame_append() to append payload data.
  *
  * @param ctx Points to the memory region the MAC uses to store its context.
  * @param frame_length Length of the frame to send.
@@ -368,7 +368,7 @@ enum rxTxState {
  * Signature of APP's callback function to be called by the MAC
  * when a buffer has been processed.
  *
- * @param byteWritten Number of written byte.
+ * @param byteWritten Number of written bytes.
  */
 typedef void ( *SF_SERIALMAC_BUF_EVT ) ( struct sf_serialmac_ctx *ctx );
 
