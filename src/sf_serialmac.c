@@ -275,7 +275,7 @@ static enum sf_serialmac_return rx ( struct sf_serialmac_ctx *ctx,
                                                    buffer->length -
                                                    buffer->remains ),
                                            byteToReceive ) ) !=
-                                           bytesReceived ) {
+                                           byteToReceive ) {
             /** This should never happen, but if it does we can catch it. */
             return SF_SERIALMAC_ERROR_EXCEPTION;
         }
