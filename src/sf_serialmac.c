@@ -55,15 +55,6 @@ extern "C"
 #define UINT8_TO_UINT16(u8arr) (((((uint16_t)((u8arr)[0]))<<8U) & 0xFF00U) | \
 (((uint16_t)((u8arr)[1])) & 0xFFU ) )
 
-
-/**
- * Signature of APP's callback function to be called by the MAC
- * when a buffer has been processed.
- *
- * @param byteWritten Number of written byte.
- */
-typedef void ( *SF_SERIALMAC_BUF_EVT ) ( struct sf_serialmac_ctx *ctx );
-
 static struct sf_serialmac_buffer* initBuffer (
     struct sf_serialmac_buffer *buffer, uint8_t *memory, size_t length,
     SF_SERIALMAC_BUF_EVT callback );
