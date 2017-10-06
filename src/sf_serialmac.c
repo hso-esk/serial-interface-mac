@@ -606,10 +606,6 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
          */
         && ctx->rxFrame.state != SF_SERIALMAC_IDLE );
 
-    /** Check for HAL error. */
-    if ( bytesWaiting < 0 ) {
-        ret = SF_SERIALMAC_ERROR_HAL_ERROR;
-    }
     return ret;
 }
 
