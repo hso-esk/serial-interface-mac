@@ -344,18 +344,17 @@ static void rxProcCrcCB ( struct sf_serialmac_ctx *ctx )
                                   length );
     if ( crcRx != crcCalc ) {
         /**
-         * A frame of length 0 indicates an CRC error.
-         * Which means this MAC does not support zero length frames.
-         * However, I cannot think of any use case where someone would need
-         * to distinguish between broken frames and frames with zero length.
-         * Who needs frames without payload at all?
+         * CRC verification failed. Inform the upper layer.
          */
-        length = 0;
+        ctx->error_event( ctx, SF_SERIALMAC_INDICATION_INVALID_CRC );
     }
-    /**
-     * Inform the upper layer that a frame has been completed.
-     */
-    ctx->rx_frame_event ( ctx, ctx->rxFrame.payloadBuffer.memory, length );
+    else
+    {
+        /**
+         * Inform the upper layer that a frame has been completed.
+         */
+        ctx->rx_frame_event ( ctx, ctx->rxFrame.payloadBuffer.memory, length );
+    }
     /** Regardless of the CRC, start waiting for the next frame. */
     rxInit ( ctx );
     ctx->rxFrame.state = SF_SERIALMAC_IDLE;
