@@ -71,8 +71,6 @@ enum sf_serialmac_return
      * (this is needed to work around slow serial handlers on Windows).
      */
     SF_SERIALMAC_ERROR_HAL_SLOW,
-    /** The HAL reports an error. */
-    SF_SERIALMAC_ERROR_HAL_ERROR,
     /** There was an error that should never have happened ;). */
     SF_SERIALMAC_ERROR_EXCEPTION,
     /** There was an error in buffer handling */
