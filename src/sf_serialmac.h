@@ -79,6 +79,19 @@ enum sf_serialmac_return
     SF_SERIALMAC_ERROR_BUFFER,
 };
 
+/**
+ * Indications to inform upper layer about problems processing incoming bytes.
+ */
+enum sf_serialmac_indication
+{
+    /** The CRC of a received frame is not valid. */
+    SF_SERIALMAC_INDICATION_INVALID_CRC,
+    /**
+      * The first received byte is not a SYNC BYTE.
+      * After this indication the control is handed back to the upper layer.
+      */
+    SF_SERIALMAC_INDICATION_INVALID_SYNC_BYTE
+};
 
 /**
  * Structure used by the MAC to store its context.
@@ -120,6 +133,14 @@ typedef void ( *SF_SERIALMAC_EVENT ) ( void *mac_context,
                                        uint8_t *frame_buffer,
                                        size_t frame_buffer_length );
 
+/**
+ * Signature of upper layer's callback function to be called by the MAC
+ * to indicate an error while processing incoming bytes.
+ * This functions has to be passed on initialization to @ref sf_serialmac_init().
+ */
+typedef void ( *SF_SERIALMAC_ERROR ) ( void *mac_context,
+                                       enum sf_serialmac_indication indication );
+
 
 /**
  * Returns the size of the MAC context structure.
@@ -159,6 +180,8 @@ size_t sf_serialmac_ctx_size ( void );
  * has been sent.
  * @param tx_buffer_event Callback function to be called by the MAC when an
  * outgoing buffer has been processed.
+ * @param error_event Callback function to be called by the MAC to indicate
+ * an error while processing incoming bytes.
  * @return Error state.
  */
 enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
@@ -166,7 +189,8 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
         SF_SERIALMAC_HAL_READ_WAIT_FUNCTION read_wait,
         SF_SERIALMAC_HAL_WRITE_FUNCTION write, SF_SERIALMAC_EVENT rx_event,
         SF_SERIALMAC_EVENT rx_buffer_event, SF_SERIALMAC_EVENT rx_sync_event,
-        SF_SERIALMAC_EVENT tx_event, SF_SERIALMAC_EVENT tx_buffer_event );
+        SF_SERIALMAC_EVENT tx_event, SF_SERIALMAC_EVENT tx_buffer_event,
+        SF_SERIALMAC_ERROR error_event );
 
 /**
  * Reset function of STACKFORCE Serial MAC.
@@ -433,6 +457,8 @@ struct sf_serialmac_ctx {
     SF_SERIALMAC_EVENT tx_frame_event;
     /** Function to be called when a TX buffer has been processed. */
     SF_SERIALMAC_EVENT tx_buffer_event;
+    /** Function to be called to indicate an error while processing incoming bytes. */
+    SF_SERIALMAC_ERROR error_event;
     /** Context of the frame to send. */
     struct sf_serialmac_frame txFrame;
     /** Context of the frame to receive. */

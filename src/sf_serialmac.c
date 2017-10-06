@@ -373,7 +373,8 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
         SF_SERIALMAC_HAL_READ_WAIT_FUNCTION readWaiting,
         SF_SERIALMAC_HAL_WRITE_FUNCTION write, SF_SERIALMAC_EVENT rxEvt,
         SF_SERIALMAC_EVENT rxBufEvt, SF_SERIALMAC_EVENT rxSyncEvt,
-        SF_SERIALMAC_EVENT txEvt, SF_SERIALMAC_EVENT txBufEvt )
+        SF_SERIALMAC_EVENT txEvt, SF_SERIALMAC_EVENT txBufEvt,
+        SF_SERIALMAC_ERROR error_event )
 {
     if ( !ctx ) {
         return SF_SERIALMAC_ERROR_NPE;
@@ -387,6 +388,7 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
     ctx->rx_sync_event = rxSyncEvt;
     ctx->tx_frame_event = txEvt;
     ctx->tx_buffer_event = txBufEvt;
+    ctx->error_event = error_event;
 
     /** Reset the context states and variables. */
     sf_serialmac_reset( ctx );
