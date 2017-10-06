@@ -212,7 +212,6 @@ enum sf_serialmac_return sf_serialmac_reset ( struct sf_serialmac_ctx *ctx );
  *
  * @param ctx Points to the memory region the MAC uses to store its context.
  * @return Error state:
- *         - SF_SERIALMAC_ERROR_HAL_ERROR: The HAL reported an error.
  *         - SF_SERIALMAC_ERROR_HAL_BUSY: The HAL is busy.
  *         - SF_SERIALMAC_ERROR_HAL_SLOW: The HAL is busy, but you may retry
  *                                        immediately (Workaround for slow HALs).

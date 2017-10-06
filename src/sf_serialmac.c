@@ -140,12 +140,8 @@ static enum sf_serialmac_return tx ( struct sf_serialmac_ctx *ctx,
         /** Send the bytes */
         if ( ( byteSent = ctx->write ( ctx->portHandle,
                                        buffer->memory
-                                       + ( buffer->length - buffer->remains
-                                         ),
-                                       buffer->remains ) ) < 0 ) {
-            /** Negative return values indicate an HAL error */
-            return SF_SERIALMAC_ERROR_HAL_ERROR;
-        } else if ( byteSent == 0 ) {
+                                       + ( buffer->length - buffer->remains ),
+                                       buffer->remains ) )  == 0 ) {
             /** No error, but nothing sent. */
             return SF_SERIALMAC_ERROR_HAL_BUSY;
         } else if ( buffer->remains < byteSent ) {
