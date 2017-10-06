@@ -122,7 +122,7 @@ if(BUILD_DOC)
 
     message(STATUS "doxyfile input: ${DOXYGEN_INPUT}")
 
-    set(SF_CORPORATE_DESIGN_URL "https://raw.githubusercontent.com/stackforce/corporate-design-doxygen/develop")
+    set(SF_CORPORATE_DESIGN_URL "https://raw.githubusercontent.com/stackforce/corporate-design-doxygen/master")
     message(STATUS "Download files for STACKFORCE doxygen corporate design:")
 
     file(DOWNLOAD
@@ -173,6 +173,26 @@ if(BUILD_DOC)
     # set the readme file as mainpage
     file(APPEND ${PROJECT_BINARY_DIR}/Doxyfile
         "USE_MDFILE_AS_MAINPAGE = README.md\n"
+    )
+
+    # Omit absolute path descriptions
+    file(APPEND ${PROJECT_BINARY_DIR}/Doxyfile
+        "STRIP_FROM_PATH        = ${CMAKE_SOURCE_DIR}\n"
+    )
+
+    # Ensure that the documentation is build for C code
+    file(APPEND ${PROJECT_BINARY_DIR}/Doxyfile
+        "OPTIMIZE_OUTPUT_FOR_C  = YES\n"
+    )
+
+    # Enhances the readability of structs
+    file(APPEND ${PROJECT_BINARY_DIR}/Doxyfile
+        "INLINE_SIMPLE_STRUCTS  = YES\n"
+    )
+
+    # Omit that comments in C files are present in the documentation.
+    file(APPEND ${PROJECT_BINARY_DIR}/Doxyfile
+        "HIDE_IN_BODY_DOCS  = YES\n"
     )
 
     add_custom_target(doc ALL

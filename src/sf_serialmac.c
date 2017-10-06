@@ -17,9 +17,8 @@ extern "C"
  * @author     Lars Möllendorf
  * @brief      STACKFORCE serial command line client (sf)
  *
- * @details Please consult the
- * @ref introduction "README" for a general overview and
- * @ref usage "how to use" the STACKFORCE Serial MAC.
+ * @details Please consult the "README" for a general overview
+ * of the STACKFORCE Serial MAC.
  *
  * This file is part of the STACKFORCE Serial MAC Library
  * (below "libserialmac").
@@ -55,15 +54,6 @@ extern "C"
 ( ( u8arr ) [1] = ( uint8_t ) ( ( u16var ) & 0xFFU ) )
 #define UINT8_TO_UINT16(u8arr) (((((uint16_t)((u8arr)[0]))<<8U) & 0xFF00U) | \
 (((uint16_t)((u8arr)[1])) & 0xFFU ) )
-
-
-/**
- * Signature of APP's callback function to be called by the MAC
- * when a buffer has been processed.
- *
- * @param byteWritten Number of written byte.
- */
-typedef void ( *SF_SERIALMAC_BUF_EVT ) ( struct sf_serialmac_ctx *ctx );
 
 static struct sf_serialmac_buffer* initBuffer (
     struct sf_serialmac_buffer *buffer, uint8_t *memory, size_t length,
@@ -150,12 +140,8 @@ static enum sf_serialmac_return tx ( struct sf_serialmac_ctx *ctx,
         /** Send the bytes */
         if ( ( byteSent = ctx->write ( ctx->portHandle,
                                        buffer->memory
-                                       + ( buffer->length - buffer->remains
-                                         ),
-                                       buffer->remains ) ) < 0 ) {
-            /** Negative return values indicate an HAL error */
-            return SF_SERIALMAC_ERROR_HAL_ERROR;
-        } else if ( byteSent == 0 ) {
+                                       + ( buffer->length - buffer->remains ),
+                                       buffer->remains ) )  == 0 ) {
             /** No error, but nothing sent. */
             return SF_SERIALMAC_ERROR_HAL_BUSY;
         } else if ( buffer->remains < byteSent ) {
@@ -288,10 +274,8 @@ static enum sf_serialmac_return rx ( struct sf_serialmac_ctx *ctx,
                                            ( void* ) ( buffer->memory +
                                                    buffer->length -
                                                    buffer->remains ),
-                                           byteToReceive ) ) < 0 ) {
-            return SF_SERIALMAC_ERROR_HAL_ERROR;
-        }
-        if ( byteToReceive != bytesReceived ) {
+                                           byteToReceive ) ) !=
+                                           bytesReceived ) {
             /** This should never happen, but if it does we can catch it. */
             return SF_SERIALMAC_ERROR_EXCEPTION;
         }
@@ -367,18 +351,17 @@ static void rxProcCrcCB ( struct sf_serialmac_ctx *ctx )
                                   length );
     if ( crcRx != crcCalc ) {
         /**
-         * A frame of length 0 indicates an CRC error.
-         * Which means this MAC does not support zero length frames.
-         * However, I cannot think of any use case where someone would need
-         * to distinguish between broken frames and frames with zero length.
-         * Who needs frames without payload at all?
+         * CRC verification failed. Inform the upper layer.
          */
-        length = 0;
+        ctx->error_event( ctx, SF_SERIALMAC_INDICATION_INVALID_CRC );
     }
-    /**
-     * Inform the upper layer that a frame has been completed.
-     */
-    ctx->rx_frame_event ( ctx, ctx->rxFrame.payloadBuffer.memory, length );
+    else
+    {
+        /**
+         * Inform the upper layer that a frame has been completed.
+         */
+        ctx->rx_frame_event ( ctx, ctx->rxFrame.payloadBuffer.memory, length );
+    }
     /** Regardless of the CRC, start waiting for the next frame. */
     rxInit ( ctx );
     ctx->rxFrame.state = SF_SERIALMAC_IDLE;
@@ -396,7 +379,8 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
         SF_SERIALMAC_HAL_READ_WAIT_FUNCTION readWaiting,
         SF_SERIALMAC_HAL_WRITE_FUNCTION write, SF_SERIALMAC_EVENT rxEvt,
         SF_SERIALMAC_EVENT rxBufEvt, SF_SERIALMAC_EVENT rxSyncEvt,
-        SF_SERIALMAC_EVENT txEvt, SF_SERIALMAC_EVENT txBufEvt )
+        SF_SERIALMAC_EVENT txEvt, SF_SERIALMAC_EVENT txBufEvt,
+        SF_SERIALMAC_ERROR error_event )
 {
     if ( !ctx ) {
         return SF_SERIALMAC_ERROR_NPE;
@@ -410,6 +394,7 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
     ctx->rx_sync_event = rxSyncEvt;
     ctx->tx_frame_event = txEvt;
     ctx->tx_buffer_event = txBufEvt;
+    ctx->error_event = error_event;
 
     /** Reset the context states and variables. */
     sf_serialmac_reset( ctx );
@@ -613,6 +598,8 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
                                  &ctx->rxFrame.headerMemory,
                                  SF_SERIALMAC_PROTOCOL_HEADER_LEN,
                                  rxProcHeaderCB );
+                    /** The received byte was no sync byte. Inform the upper layer. */
+                    ctx->error_event( ctx, SF_SERIALMAC_INDICATION_INVALID_SYNC_BYTE );
                 }
 
                 break;
@@ -641,10 +628,6 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
          */
         && ctx->rxFrame.state != SF_SERIALMAC_IDLE );
 
-    /** Check for HAL error. */
-    if ( bytesWaiting < 0 ) {
-        ret = SF_SERIALMAC_ERROR_HAL_ERROR;
-    }
     return ret;
 }
 
