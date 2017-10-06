@@ -586,6 +586,8 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
                                  &ctx->rxFrame.headerMemory,
                                  SF_SERIALMAC_PROTOCOL_HEADER_LEN,
                                  rxProcHeaderCB );
+                    /** The received byte was no sync byte. Inform the upper layer. */
+                    ctx->error_event( ctx, SF_SERIALMAC_INDICATION_INVALID_SYNC_BYTE );
                 }
 
                 break;
