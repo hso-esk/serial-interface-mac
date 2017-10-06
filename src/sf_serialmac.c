@@ -311,7 +311,7 @@ static void rxProcHeaderCB ( struct sf_serialmac_ctx *ctx )
     else
     {
       /** Inform upper layer that the frame header was not valid. */
-      ctx->rx_buffer_event ( ctx, NULL, 0U );
+      ctx->error_event ( ctx, SF_SERIALMAC_INDICATION_LENGTH_VERIFICATION_FAILED );
       /** Header validation failed. Reset RX state. */
       initBuffer ( &ctx->rxFrame.headerBuffer, ( uint8_t* )
                    &ctx->rxFrame.headerMemory,
