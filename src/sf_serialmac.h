@@ -174,8 +174,8 @@ size_t sf_serialmac_ctx_size ( void );
  * @param rx_buffer_event Callback function to be called by the MAC when an
  * ingoing buffer has to be provided. If this function is called a frame is
  * ready to be received using sf_serialmac_rxFrame().
- * @param rx_sync_event Callback function to be called by the MAC when a SYNC BYTE
- * @ref SF_SERIALMAC_PROTOCOL_SYNC_WORD has been received.
+ * @param rx_sync_event Callback function to be called by the MAC when a SYNC byte
+ * (@ref SF_SERIALMAC_PROTOCOL_SYNC_WORD) has been received.
  * @param tx_event Callback function to be called by the MAC when a whole frame
  * has been sent.
  * @param tx_buffer_event Callback function to be called by the MAC when an
