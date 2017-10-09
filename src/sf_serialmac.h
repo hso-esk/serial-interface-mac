@@ -93,7 +93,7 @@ enum sf_serialmac_error
       * The validation of the LENGTH and the INVERTED LENGTH field failed.
       * Upper layer has to decide how this problem is treated.
       */
-    SF_SERIALMAC_INDICATION_LENGTH_VERIFICATION_FAILED
+    SF_SERIALMAC_ERROR_LENGTH_VERIFICATION_FAILED
 };
 
 /**
