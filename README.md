@@ -101,7 +101,7 @@ as SF_SERIALMAC_RX_EVENT rx_event() on initialization.
 
 In case there is any error or problem (e.g. invalid CRC) while receiving a frame,
 the upper layer's error callback function is called. This function has been registered as
-SF_SERIALMAC_ERROR error_event on initialization.
+SF_SERIALMAC_EVENT_ERROR error_event on initialization.
 
 ## Transmitting frames
 

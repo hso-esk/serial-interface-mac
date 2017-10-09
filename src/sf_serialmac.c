@@ -358,7 +358,7 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
         SF_SERIALMAC_HAL_WRITE_FUNCTION write, SF_SERIALMAC_EVENT rxEvt,
         SF_SERIALMAC_EVENT rxBufEvt, SF_SERIALMAC_EVENT rxSyncEvt,
         SF_SERIALMAC_EVENT txEvt, SF_SERIALMAC_EVENT txBufEvt,
-        SF_SERIALMAC_ERROR error_event )
+        SF_SERIALMAC_EVENT_ERROR error_event )
 {
     if ( !ctx ) {
         return SF_SERIALMAC_RETURN_ERROR_NPE;
