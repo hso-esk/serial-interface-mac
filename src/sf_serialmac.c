@@ -331,7 +331,7 @@ static void rxProcCrcCB ( struct sf_serialmac_ctx *ctx )
         /**
          * CRC verification failed. Inform the upper layer.
          */
-        ctx->error_event( ctx, SF_SERIALMAC_INDICATION_INVALID_CRC );
+        ctx->error_event( ctx, SF_SERIALMAC_ERROR_INVALID_CRC );
     }
     else
     {
@@ -571,7 +571,7 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
                                  SF_SERIALMAC_PROTOCOL_HEADER_LEN,
                                  rxProcHeaderCB );
                     /** The received byte was no sync byte. Inform the upper layer. */
-                    ctx->error_event( ctx, SF_SERIALMAC_INDICATION_INVALID_SYNC_BYTE );
+                    ctx->error_event( ctx, SF_SERIALMAC_ERROR_INVALID_SYNC_BYTE );
                 }
 
                 break;

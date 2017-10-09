@@ -80,15 +80,15 @@ enum sf_serialmac_return
 /**
  * Indications to inform upper layer about problems processing incoming bytes.
  */
-enum sf_serialmac_indication
+enum sf_serialmac_error
 {
     /** The CRC of a received frame is not valid. */
-    SF_SERIALMAC_INDICATION_INVALID_CRC,
+    SF_SERIALMAC_ERROR_INVALID_CRC,
     /**
       * The first received byte is not a SYNC BYTE.
       * After this indication the control is handed back to the upper layer.
       */
-    SF_SERIALMAC_INDICATION_INVALID_SYNC_BYTE
+    SF_SERIALMAC_ERROR_INVALID_SYNC_BYTE
 };
 
 /**
@@ -137,7 +137,7 @@ typedef void ( *SF_SERIALMAC_EVENT ) ( void *mac_context,
  * This functions has to be passed on initialization to @ref sf_serialmac_init().
  */
 typedef void ( *SF_SERIALMAC_EVENT_ERROR ) ( void *mac_context,
-                                       enum sf_serialmac_indication indication );
+                                             enum sf_serialmac_error error );
 
 
 /**
