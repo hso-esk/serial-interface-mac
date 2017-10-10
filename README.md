@@ -95,10 +95,13 @@ Whenever the STACKFORCE Serial MAC receives the header of a frame it calls
 the upper layers callback function registered as SF_SERIALMAC_RX_EVENT
 rx_buffer_event() on Initialization. To receive the frame the upper layer has
 to provide a memory location for the payload passed to the MAC by calling
-sf_serialmac_rx_frame(). As soon as the frame has been completed or rejected
-due to CRC error or time out, the upper layer's callback function is called
-which has been registered as SF_SERIALMAC_RX_EVENT rx_event() on
-initialization.
+sf_serialmac_rx_frame(). As soon as the frame has been completed,
+the upper layer's callback function is called which has been registered
+as SF_SERIALMAC_RX_EVENT rx_event() on initialization.
+
+In case there is any error or problem (e.g. invalid CRC) while receiving a frame,
+the upper layer's error callback function is called. This function has been registered as
+SF_SERIALMAC_EVENT_ERROR error_event on initialization.
 
 ## Transmitting frames
 

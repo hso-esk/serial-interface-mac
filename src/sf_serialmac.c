@@ -17,9 +17,8 @@ extern "C"
  * @author     Lars Möllendorf
  * @brief      STACKFORCE serial command line client (sf)
  *
- * @details Please consult the
- * @ref introduction "README" for a general overview and
- * @ref usage "how to use" the STACKFORCE Serial MAC.
+ * @details Please consult the "README" for a general overview
+ * of the STACKFORCE Serial MAC.
  *
  * This file is part of the STACKFORCE Serial MAC Library
  * (below "libserialmac").
@@ -55,15 +54,6 @@ extern "C"
 ( ( u8arr ) [1] = ( uint8_t ) ( ( u16var ) & 0xFFU ) )
 #define UINT8_TO_UINT16(u8arr) (((((uint16_t)((u8arr)[0]))<<8U) & 0xFF00U) | \
 (((uint16_t)((u8arr)[1])) & 0xFFU ) )
-
-
-/**
- * Signature of APP's callback function to be called by the MAC
- * when a buffer has been processed.
- *
- * @param byteWritten Number of written byte.
- */
-typedef void ( *SF_SERIALMAC_BUF_EVT ) ( struct sf_serialmac_ctx *ctx );
 
 static struct sf_serialmac_buffer* initBuffer (
     struct sf_serialmac_buffer *buffer, uint8_t *memory, size_t length,
@@ -150,17 +140,13 @@ static enum sf_serialmac_return tx ( struct sf_serialmac_ctx *ctx,
         /** Send the bytes */
         if ( ( byteSent = ctx->write ( ctx->portHandle,
                                        buffer->memory
-                                       + ( buffer->length - buffer->remains
-                                         ),
-                                       buffer->remains ) ) < 0 ) {
-            /** Negative return values indicate an HAL error */
-            return SF_SERIALMAC_ERROR_HAL_ERROR;
-        } else if ( byteSent == 0 ) {
+                                       + ( buffer->length - buffer->remains ),
+                                       buffer->remains ) )  == 0 ) {
             /** No error, but nothing sent. */
-            return SF_SERIALMAC_ERROR_HAL_BUSY;
+            return SF_SERIALMAC_RETURN_ERROR_HAL_BUSY;
         } else if ( buffer->remains < byteSent ) {
             /** This should never happen, but if it does we can catch it. */
-            return SF_SERIALMAC_ERROR_EXCEPTION;
+            return SF_SERIALMAC_RETURN_ERROR_EXCEPTION;
         }
         if ( crc ) {
             crcRead = UINT8_TO_UINT16 ( crc );
@@ -177,7 +163,7 @@ static enum sf_serialmac_return tx ( struct sf_serialmac_ctx *ctx,
     /** Check if all bytes have been sent */
     if ( !buffer->remains ) {
         buffer->callback ( ctx );
-        return SF_SERIALMAC_SUCCESS;
+        return SF_SERIALMAC_RETURN_SUCCESS;
     } else {
         /**
          * A special return value has been added here to work-around
@@ -202,7 +188,7 @@ static enum sf_serialmac_return tx ( struct sf_serialmac_ctx *ctx,
          * buffer is full.
          * See Libserialport's sp_nonblocking_write() function for details.
          */
-        return SF_SERIALMAC_ERROR_HAL_SLOW;
+        return SF_SERIALMAC_RETURN_ERROR_HAL_SLOW;
     }
 }
 
@@ -278,7 +264,7 @@ static enum sf_serialmac_return rx ( struct sf_serialmac_ctx *ctx,
     if( buffer->memory == NULL )
     {
       /** No buffer assigned. */
-      return SF_SERIALMAC_ERROR_BUFFER;
+      return SF_SERIALMAC_RETURN_ERROR_BUFFER;
     }
 
     byteToReceive = buffer->remains > bytesWaiting ? bytesWaiting :
@@ -288,12 +274,10 @@ static enum sf_serialmac_return rx ( struct sf_serialmac_ctx *ctx,
                                            ( void* ) ( buffer->memory +
                                                    buffer->length -
                                                    buffer->remains ),
-                                           byteToReceive ) ) < 0 ) {
-            return SF_SERIALMAC_ERROR_HAL_ERROR;
-        }
-        if ( byteToReceive != bytesReceived ) {
+                                           byteToReceive ) ) !=
+                                           byteToReceive ) {
             /** This should never happen, but if it does we can catch it. */
-            return SF_SERIALMAC_ERROR_EXCEPTION;
+            return SF_SERIALMAC_RETURN_ERROR_EXCEPTION;
         }
         buffer->remains -= bytesReceived;
         if ( !buffer->remains ) {
@@ -301,7 +285,7 @@ static enum sf_serialmac_return rx ( struct sf_serialmac_ctx *ctx,
         }
     }
 
-    return SF_SERIALMAC_SUCCESS;
+    return SF_SERIALMAC_RETURN_SUCCESS;
 }
 
 
@@ -345,18 +329,17 @@ static void rxProcCrcCB ( struct sf_serialmac_ctx *ctx )
                                   length );
     if ( crcRx != crcCalc ) {
         /**
-         * A frame of length 0 indicates an CRC error.
-         * Which means this MAC does not support zero length frames.
-         * However, I cannot think of any use case where someone would need
-         * to distinguish between broken frames and frames with zero length.
-         * Who needs frames without payload at all?
+         * CRC verification failed. Inform the upper layer.
          */
-        length = 0;
+        ctx->error_event( ctx, SF_SERIALMAC_ERROR_INVALID_CRC );
     }
-    /**
-     * Inform the upper layer that a frame has been completed.
-     */
-    ctx->rx_frame_event ( ctx, ctx->rxFrame.payloadBuffer.memory, length );
+    else
+    {
+        /**
+         * Inform the upper layer that a frame has been completed.
+         */
+        ctx->rx_frame_event ( ctx, ctx->rxFrame.payloadBuffer.memory, length );
+    }
     /** Regardless of the CRC, start waiting for the next frame. */
     rxInit ( ctx );
     ctx->rxFrame.state = SF_SERIALMAC_IDLE;
@@ -374,10 +357,11 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
         SF_SERIALMAC_HAL_READ_WAIT_FUNCTION readWaiting,
         SF_SERIALMAC_HAL_WRITE_FUNCTION write, SF_SERIALMAC_EVENT rxEvt,
         SF_SERIALMAC_EVENT rxBufEvt, SF_SERIALMAC_EVENT rxSyncEvt,
-        SF_SERIALMAC_EVENT txEvt, SF_SERIALMAC_EVENT txBufEvt )
+        SF_SERIALMAC_EVENT txEvt, SF_SERIALMAC_EVENT txBufEvt,
+        SF_SERIALMAC_EVENT_ERROR error_event )
 {
     if ( !ctx ) {
-        return SF_SERIALMAC_ERROR_NPE;
+        return SF_SERIALMAC_RETURN_ERROR_NPE;
     }
     ctx->portHandle = portHandle;
     ctx->read = read;
@@ -388,17 +372,18 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
     ctx->rx_sync_event = rxSyncEvt;
     ctx->tx_frame_event = txEvt;
     ctx->tx_buffer_event = txBufEvt;
+    ctx->error_event = error_event;
 
     /** Reset the context states and variables. */
     sf_serialmac_reset( ctx );
 
-    return SF_SERIALMAC_SUCCESS;
+    return SF_SERIALMAC_RETURN_SUCCESS;
 }
 
 enum sf_serialmac_return sf_serialmac_reset ( struct sf_serialmac_ctx *ctx )
 {
   if ( !ctx ) {
-    return SF_SERIALMAC_ERROR_NPE;
+    return SF_SERIALMAC_RETURN_ERROR_NPE;
   }
 
   /** Reset the context states and variables. */
@@ -407,17 +392,17 @@ enum sf_serialmac_return sf_serialmac_reset ( struct sf_serialmac_ctx *ctx )
   rxInit ( ctx );
   ctx->rxFrame.state = SF_SERIALMAC_IDLE;
 
-  return SF_SERIALMAC_SUCCESS;
+  return SF_SERIALMAC_RETURN_SUCCESS;
 }
 
 enum sf_serialmac_return sf_serialmac_tx_frame_start ( struct sf_serialmac_ctx
         *ctx, size_t len )
 {
     if ( !ctx ) {
-        return SF_SERIALMAC_ERROR_NPE;
+        return SF_SERIALMAC_RETURN_ERROR_NPE;
     }
     if ( ctx->txFrame.state != SF_SERIALMAC_IDLE ) {
-        return SF_SERIALMAC_ERROR_FRM_PENDING;
+        return SF_SERIALMAC_RETURN_ERROR_FRM_PENDING;
     }
 
     /** Write frame length into the length field of the frame header */
@@ -426,7 +411,7 @@ enum sf_serialmac_return sf_serialmac_tx_frame_start ( struct sf_serialmac_ctx
                       len );
     ctx->txFrame.remains = len;
     ctx->txFrame.state = SF_SERIALMAC_HEADER;
-    return SF_SERIALMAC_SUCCESS;
+    return SF_SERIALMAC_RETURN_SUCCESS;
 }
 
 
@@ -435,7 +420,7 @@ enum sf_serialmac_return sf_serialmac_tx_frame_append ( struct sf_serialmac_ctx
 {
     size_t buff = 0;
     if ( !ctx || !frmBufLoc ) {
-        return SF_SERIALMAC_ERROR_NPE;
+        return SF_SERIALMAC_RETURN_ERROR_NPE;
     }
     /**
      * Check if a payload buffer has been assigned before and is not
@@ -443,7 +428,7 @@ enum sf_serialmac_return sf_serialmac_tx_frame_append ( struct sf_serialmac_ctx
      * before the previous frame has been started.
      */
     if ( ctx->txFrame.payloadBuffer.memory || ctx->txFrame.state == SF_SERIALMAC_CRC ) {
-        return SF_SERIALMAC_ERROR_RW_PENDING;
+        return SF_SERIALMAC_RETURN_ERROR_RW_PENDING;
     }
     buff = frmBufSize > ctx->txFrame.remains ? ctx->txFrame.remains :
            frmBufSize;
@@ -455,7 +440,7 @@ enum sf_serialmac_return sf_serialmac_tx_frame_append ( struct sf_serialmac_ctx
      */
     initBuffer ( &ctx->txFrame.payloadBuffer, ( uint8_t* ) frmBufLoc, buff,
                  txProcPayloadCB );
-    return SF_SERIALMAC_SUCCESS;
+    return SF_SERIALMAC_RETURN_SUCCESS;
 }
 
 
@@ -463,7 +448,7 @@ enum sf_serialmac_return sf_serialmac_tx_frame ( struct sf_serialmac_ctx *ctx,
         size_t frmLen, const uint8_t *frmBufLoc, size_t frmBufSize )
 {
   if( !ctx || !frmBufLoc ) {
-    return SF_SERIALMAC_ERROR_NPE;
+    return SF_SERIALMAC_RETURN_ERROR_NPE;
   }
 
     sf_serialmac_tx_frame_start ( ctx, frmLen );
@@ -475,30 +460,30 @@ enum sf_serialmac_return sf_serialmac_rx_frame ( struct sf_serialmac_ctx *ctx,
         uint8_t *frmBufLoc, size_t frmBufSize )
 {
     if ( !ctx || !frmBufLoc ) {
-        return SF_SERIALMAC_ERROR_NPE;
+        return SF_SERIALMAC_RETURN_ERROR_NPE;
     }
     if ( ctx->rxFrame.payloadBuffer.memory != NULL ) {
-        return SF_SERIALMAC_ERROR_RW_PENDING;
+        return SF_SERIALMAC_RETURN_ERROR_RW_PENDING;
     }
     if ( frmBufSize < ctx->rxFrame.remains ) {
-        return SF_SERIALMAC_ERROR_BUFFER;
+        return SF_SERIALMAC_RETURN_ERROR_BUFFER;
     }
     initBuffer ( &ctx->rxFrame.payloadBuffer, frmBufLoc, ctx->rxFrame.remains,
                  rxProcPayloadCB );
     memset ( ( void * ) ctx->rxFrame.payloadBuffer.memory, 0,
              ctx->rxFrame.payloadBuffer.length );
-    return SF_SERIALMAC_SUCCESS;
+    return SF_SERIALMAC_RETURN_SUCCESS;
 }
 
 
 enum sf_serialmac_return sf_serialmac_hal_tx_callback ( struct sf_serialmac_ctx
         *ctx )
 {
-    enum sf_serialmac_return ret = SF_SERIALMAC_SUCCESS;
+    enum sf_serialmac_return ret = SF_SERIALMAC_RETURN_SUCCESS;
 
     /** Do nothing if there is no context. */
     if ( !ctx ) {
-        return SF_SERIALMAC_ERROR_NPE;
+        return SF_SERIALMAC_RETURN_ERROR_NPE;
     }
 
     /**
@@ -527,7 +512,7 @@ enum sf_serialmac_return sf_serialmac_hal_tx_callback ( struct sf_serialmac_ctx
                            ctx->txFrame.crcMemory );
             }
             else {
-              ret = SF_SERIALMAC_ERROR_NPE;
+              ret = SF_SERIALMAC_RETURN_ERROR_NPE;
             }
             break;
         case SF_SERIALMAC_CRC:
@@ -541,9 +526,9 @@ enum sf_serialmac_return sf_serialmac_hal_tx_callback ( struct sf_serialmac_ctx
          */
         ctx->txFrame.state != SF_SERIALMAC_IDLE &&
         /** If the last action has been successful we proceed */
-        ( ret == SF_SERIALMAC_SUCCESS
+        ( ret == SF_SERIALMAC_RETURN_SUCCESS
           /** This is a workaround for slow serial ports. */
-          || ret == SF_SERIALMAC_ERROR_HAL_SLOW ) );
+          || ret == SF_SERIALMAC_RETURN_ERROR_HAL_SLOW ) );
 
     return ret;
 }
@@ -553,11 +538,11 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
         *ctx )
 {
     size_t bytesWaiting = 0;
-    enum sf_serialmac_return ret = SF_SERIALMAC_SUCCESS;
+    enum sf_serialmac_return ret = SF_SERIALMAC_RETURN_SUCCESS;
 
     /** Do nothing if there is no context. */
     if ( !ctx ) {
-        return SF_SERIALMAC_ERROR_NPE;
+        return SF_SERIALMAC_RETURN_ERROR_NPE;
     }
 
 
@@ -585,6 +570,8 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
                                  &ctx->rxFrame.headerMemory,
                                  SF_SERIALMAC_PROTOCOL_HEADER_LEN,
                                  rxProcHeaderCB );
+                    /** The received byte was no sync byte. Inform the upper layer. */
+                    ctx->error_event( ctx, SF_SERIALMAC_ERROR_INVALID_SYNC_BYTE );
                 }
 
                 break;
@@ -599,24 +586,20 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
                 break;
             default:
                 /** This should never happen, but if it does we can catch it. */
-                ret = SF_SERIALMAC_ERROR_EXCEPTION;
+                ret = SF_SERIALMAC_RETURN_ERROR_EXCEPTION;
             }
         }
     } while (
         /** Hand the control back to main() if there is nothing to do */
         bytesWaiting  > 0
         /** or in case of errors */
-        && ret == SF_SERIALMAC_SUCCESS
+        && ret == SF_SERIALMAC_RETURN_SUCCESS
         /**
          * or if a whole frame has been processed (also to prevent DOS
          * attacks).
          */
         && ctx->rxFrame.state != SF_SERIALMAC_IDLE );
 
-    /** Check for HAL error. */
-    if ( bytesWaiting < 0 ) {
-        ret = SF_SERIALMAC_ERROR_HAL_ERROR;
-    }
     return ret;
 }
 
