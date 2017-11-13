@@ -291,12 +291,34 @@ static enum sf_serialmac_return rx ( struct sf_serialmac_ctx *ctx,
 
 static void rxProcHeaderCB ( struct sf_serialmac_ctx *ctx )
 {
-    /** Start the countdown */
+    uint16_t invertedLength;
+
+    /** Get the length field  */
     ctx->rxFrame.remains = UINT8_TO_UINT16 ( ctx->rxFrame.headerMemory +
                            SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN );
-    /** Inform upper layer that there has been a frame header received */
-    ctx->rxFrame.state = SF_SERIALMAC_PAYLOAD;
-    ctx->rx_buffer_event ( ctx, NULL, ctx->rxFrame.remains );
+    /** Get the inverted length field */
+    invertedLength = UINT8_TO_UINT16 ( ctx->rxFrame.headerMemory +
+                              SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN +
+                              SF_SERIALMAC_PROTOCOL_LENGTH_INVERTED_FIELD_LEN);
+
+    /** Validate the header. */
+    if( ctx->rxFrame.remains == ~invertedLength )
+    {
+      /** Inform upper layer that there has been a frame header received */
+      ctx->rxFrame.state = SF_SERIALMAC_PAYLOAD;
+      ctx->rx_buffer_event ( ctx, NULL, ctx->rxFrame.remains );
+    }
+    else
+    {
+      /** Inform upper layer that the frame header was not valid. */
+      ctx->error_event ( ctx, SF_SERIALMAC_ERROR_LENGTH_VERIFICATION_FAILED );
+      /** Header validation failed. Reset RX state. */
+      initBuffer ( &ctx->rxFrame.headerBuffer, ( uint8_t* )
+                   &ctx->rxFrame.headerMemory,
+                   SF_SERIALMAC_PROTOCOL_HEADER_LEN,
+                   rxProcHeaderCB );
+      ctx->rxFrame.state = SF_SERIALMAC_IDLE;
+    }
 }
 
 
@@ -409,6 +431,12 @@ enum sf_serialmac_return sf_serialmac_tx_frame_start ( struct sf_serialmac_ctx
     UINT16_TO_UINT8 ( ctx->txFrame.headerMemory +
                       SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN,
                       len );
+    /** Write inverted frame length into the inverted length
+     *  field of the frame header */
+    UINT16_TO_UINT8 ( ctx->txFrame.headerMemory +
+                      SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN +
+                      SF_SERIALMAC_PROTOCOL_LENGTH_INVERTED_FIELD_LEN,
+                      ~len );
     ctx->txFrame.remains = len;
     ctx->txFrame.state = SF_SERIALMAC_HEADER;
     return SF_SERIALMAC_RETURN_SUCCESS;
