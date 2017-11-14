@@ -185,6 +185,9 @@ size_t sf_serialmac_ctx_size ( void );
  * outgoing buffer has been processed.
  * @param error_event Callback function to be called by the MAC to indicate
  * an error while processing incoming bytes.
+ * @param useInvertedLengthField Configure if the Serial MAC should use the inverted
+ * length field feature. To use this option the macro
+ * @ref SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL  must be set to true.
  * @return Error state.
  */
 enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
@@ -193,7 +196,8 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
         SF_SERIALMAC_HAL_WRITE_FUNCTION write, SF_SERIALMAC_EVENT rx_event,
         SF_SERIALMAC_EVENT rx_buffer_event, SF_SERIALMAC_EVENT rx_sync_event,
         SF_SERIALMAC_EVENT tx_event, SF_SERIALMAC_EVENT tx_buffer_event,
-        SF_SERIALMAC_EVENT_ERROR error_event );
+        SF_SERIALMAC_EVENT_ERROR error_event,
+        bool useInvertedLengthField );
 
 /**
  * Reset function of STACKFORCE Serial MAC.
@@ -468,6 +472,8 @@ struct sf_serialmac_ctx {
     struct sf_serialmac_frame txFrame;
     /** Context of the frame to receive. */
     struct sf_serialmac_frame rxFrame;
+    /** Configures if the inverted length field feature is used. */
+    bool useInvertedLengthField;
 };
 
 #endif /* STACKFORCE_SERIALMAC_H_ */
