@@ -302,7 +302,7 @@ static void rxProcHeaderCB ( struct sf_serialmac_ctx *ctx )
                               SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN);
 
     /** Validate the header. */
-    if( ctx->rxFrame.remains == ~invertedLength )
+    if( ctx->rxFrame.remains == ( uint16_t ) ( ~invertedLength ) )
     {
       /** Inform upper layer that there has been a frame header received */
       ctx->rxFrame.state = SF_SERIALMAC_PAYLOAD;
