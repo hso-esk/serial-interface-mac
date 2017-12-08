@@ -54,7 +54,7 @@ The Frame format is:
     +--------------------+-----------------+--------------------------+-- - - --+--------------+
 
   - INVERTED LENGTH: Bit inverted length field.
-  - All other field are described in Serial MAC Protocol V1.
+  - All other fields are described in Serial MAC Protocol V1.
 
   Example:
     - Payload: 0x01
