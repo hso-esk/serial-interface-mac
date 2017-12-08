@@ -41,6 +41,9 @@ extern "C"
 #ifndef __STACKFORCE_SERIALMAC_H_
 #define __STACKFORCE_SERIALMAC_H_
 
+/*! @defgroup SF_SERIALMAC Serial Interface MAC
+ *  @{ */
+
 /* Definition of portable data types */
 #include <stdint.h>
 /* This API makes use of size_t */
@@ -461,6 +464,8 @@ struct sf_serialmac_ctx {
     /** Context of the frame to receive. */
     struct sf_serialmac_frame rxFrame;
 };
+
+/*!@} end of SF_SERIALMAC */
 
 #endif /* STACKFORCE_SERIALMAC_H_ */
 #ifdef __cplusplus
