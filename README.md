@@ -18,13 +18,52 @@ before sending them over the serial interface.
 On RX the STACKFORCE Serial MAC listens for incoming frames, verifies their
 CRC and provides the payload to the upper layer.
 
-## Frame format
+## Serial MAC Protocol version
+
+The Serial MAC Protocol version describes the structure of a Serial MAC frame.
+Please note that this version is independent from the product version.
+
+### Serial MAC Protocol V1
 
 The Frame format is:
 
-    +--------------+--------+-- - - --+-----+
-    | SYNC BYTE(S) | LENGTH | payload | CRC |
-    +--------------+--------+-- - - --+-----+
+    +--------------------+-----------------+-- - - --+--------------+
+    | SYNC BYTE [1 Byte] | LENGTH [2 Byte] | PAYLOAD | CRC [2 Byte] |
+    +--------------------+-----------------+-- - - --+--------------+
+
+  - SYNC BYTE: Fixed value 0xA5.
+  - LENGTH: Transmitted payload size. HEADER and CRC are not counted.
+  - MAC PAYLOAD Payload of the Serial MAC frame. Variable length which is described through the length field. The content of the MAC PAYLOAD is the serial protocol.
+  - CRC: Cyclic redundancy check sum over the MAC PAYLOAD. The CRC polynomial is: x^16 + x^13 + x^12 + x^11 + x^10 + x^8 + x^6 + x^5 + x^2 + 1
+
+  Example:
+    - Payload: 0x01
+
+
+    +----+-------+----+-------+
+    | A5 | 00 01 | 01 | C2 9A |
+    +----+-------+----+-------+
+
+
+### Serial MAC Protocol V2
+
+The Frame format is:
+
+    +--------------------+-----------------+--------------------------+-- - - --+--------------+
+    | SYNC BYTE [2 Byte] | LENGTH [2 Byte] | INVERTED LENGTH [2 Byte] | PAYLOAD | CRC [2 Byte] |
+    +--------------------+-----------------+--------------------------+-- - - --+--------------+
+
+  - INVERTED LENGTH: Bit inverted length field.
+  - All other fields are described in Serial MAC Protocol V1.
+
+  Example:
+    - Payload: 0x01
+
+
+    +----+-------+-------+----+-------+
+    | A5 | 00 01 | FF FE | 01 | C2 9A |
+    +----+-------+-------+----+-------+
+
 
 ## Features
 

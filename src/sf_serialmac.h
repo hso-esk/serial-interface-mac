@@ -88,7 +88,12 @@ enum sf_serialmac_error
       * The first received byte is not a SYNC BYTE.
       * After this indication the control is handed back to the upper layer.
       */
-    SF_SERIALMAC_ERROR_INVALID_SYNC_BYTE
+    SF_SERIALMAC_ERROR_INVALID_SYNC_BYTE,
+    /**
+      * The validation of the LENGTH and the INVERTED LENGTH field failed.
+      * Upper layer has to decide how this problem is treated.
+      */
+    SF_SERIALMAC_ERROR_LENGTH_VERIFICATION_FAILED
 };
 
 /**
@@ -343,16 +348,17 @@ enum sf_serialmac_return sf_serialmac_rx_frame ( struct sf_serialmac_ctx *ctx,
  */
 
 /** SYNC word of the STACKFORCE serial protocol */
-#define SF_SERIALMAC_PROTOCOL_SYNC_WORD              0xA5U
+#define SF_SERIALMAC_PROTOCOL_SYNC_WORD                  0xA5U
 /** Length of the STACKFORCE serial protocol SYNC word field. */
-#define SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN          0x01U
+#define SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN              0x01U
 /** Length of the STACKFORCE serial protocol length field */
-#define SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN       0x02U
+#define SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN           0x02U
 /** Length of the STACKFORCE serial protocol CRC field */
-#define SF_SERIALMAC_PROTOCOL_CRC_FIELD_LEN          0x02U
+#define SF_SERIALMAC_PROTOCOL_CRC_FIELD_LEN              0x02U
 /** Length of the serial MAC frame header */
 #define SF_SERIALMAC_PROTOCOL_HEADER_LEN      \
- (SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN + SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN)
+ (SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN + SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN + \
+  SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN)
 
 /**
  * A frame consists of the elements:
