@@ -310,10 +310,10 @@ static void rxProcHeaderCB ( struct sf_serialmac_ctx *ctx )
       /** Get the inverted length field */
       invertedLength = UINT8_TO_UINT16 ( ctx->rxFrame.headerMemory +
                                 SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN +
-                                SF_SERIALMAC_PROTOCOL_LENGTH_INVERTED_FIELD_LEN);
+                                SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN );
 
       /** Validate the header. */
-      if( ctx->rxFrame.remains != ~invertedLength )
+      if( ctx->rxFrame.remains != ( uint16_t ) ( ~invertedLength ) )
       {
         frameValid = false;
         /** Inform upper layer that the frame header was not valid. */
@@ -474,15 +474,17 @@ enum sf_serialmac_return sf_serialmac_tx_frame_start ( struct sf_serialmac_ctx
     UINT16_TO_UINT8 ( ctx->txFrame.headerMemory +
                       SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN,
                       len );
+
     if( ctx->useInvertedLengthField )
     {
       /** Write inverted frame length into the inverted length
        *  field of the frame header */
       UINT16_TO_UINT8 ( ctx->txFrame.headerMemory +
                         SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN +
-                        SF_SERIALMAC_PROTOCOL_LENGTH_INVERTED_FIELD_LEN,
+                        SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN,
                         ~len );
     }
+
     ctx->txFrame.remains = len;
     ctx->txFrame.state = SF_SERIALMAC_HEADER;
     return SF_SERIALMAC_RETURN_SUCCESS;
