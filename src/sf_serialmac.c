@@ -414,9 +414,6 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
     ctx->tx_buffer_event = txBufEvt;
     ctx->error_event = error_event;
 
-    /** Reset the context states and variables. */
-    sf_serialmac_reset( ctx );
-
     /* Check if inverted length feature should be used. */
     #if SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL
     ctx->useInvertedLengthField = useInvertedLengthField;
@@ -441,6 +438,9 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
         useInvertedLengthField = SF_SERIALMAC_RETURN_UNSUPPORTED_PARAMETER;
     }
     #endif
+
+    /** Reset the context states and variables. */
+    sf_serialmac_reset( ctx );
 
     return return_code;
 }
