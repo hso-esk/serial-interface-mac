@@ -476,6 +476,9 @@ struct sf_serialmac_ctx {
     struct sf_serialmac_frame rxFrame;
     /** Configures if the inverted length field feature is used. */
     bool useInvertedLengthField;
+    /** Length of the Serial MAC header. */
+    size_t headerLength;
+
 };
 
 #endif /* STACKFORCE_SERIALMAC_H_ */

@@ -111,17 +111,8 @@ static void initFrame ( struct sf_serialmac_frame *frame, uint8_t syncWord )
 
 static void txInit ( struct sf_serialmac_ctx *ctx )
 {
-    uint8_t headerLength = SF_SERIALMAC_PROTOCOL_HEADER_LEN;
-
-    #if SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL
-    if( !ctx->useInvertedLengthField ) {
-        /* Inverted length field not present. Subtract its length. */
-        headerLength -= SF_SERIALMAC_PROTOCOL_LENGTH_INVERTED_FIELD_LEN;
-    }
-    #endif
-
     initBuffer ( &ctx->txFrame.headerBuffer, ctx->txFrame.headerMemory,
-                 headerLength, txProcHeaderCB );
+                 ctx->headerLength, txProcHeaderCB );
     initBuffer ( &ctx->txFrame.payloadBuffer, NULL, 0, txProcPayloadCB );
     initBuffer ( &ctx->txFrame.crcBuffer, ctx->txFrame.crcMemory,
                  SF_SERIALMAC_PROTOCOL_CRC_FIELD_LEN, txProcCrcCB );
@@ -259,18 +250,9 @@ static void txProcCrcCB ( struct sf_serialmac_ctx *ctx )
 
 static void rxInit ( struct sf_serialmac_ctx *ctx )
 {
-    uint8_t headerLength = SF_SERIALMAC_PROTOCOL_HEADER_LEN;
-
-    #if SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL
-    if( !ctx->useInvertedLengthField ) {
-        /* Inverted length field not present. Subtract its length. */
-        headerLength -= SF_SERIALMAC_PROTOCOL_LENGTH_INVERTED_FIELD_LEN;
-    }
-    #endif
-
     initBuffer ( &ctx->rxFrame.headerBuffer, ( uint8_t* )
                  &ctx->rxFrame.headerMemory,
-                 headerLength, rxProcHeaderCB );
+                 ctx->headerLength, rxProcHeaderCB );
     initBuffer ( &ctx->rxFrame.payloadBuffer, NULL, 0, rxProcPayloadCB );
     initBuffer ( &ctx->rxFrame.crcBuffer, ctx->rxFrame.crcMemory,
                  SF_SERIALMAC_PROTOCOL_CRC_FIELD_LEN, rxProcCrcCB );
@@ -341,7 +323,7 @@ static void rxProcHeaderCB ( struct sf_serialmac_ctx *ctx )
         /** Header validation failed. Reset RX state. */
         initBuffer ( &ctx->rxFrame.headerBuffer, ( uint8_t* )
                      &ctx->rxFrame.headerMemory,
-                     SF_SERIALMAC_PROTOCOL_HEADER_LEN,
+                     ctx->headerLength,
                      rxProcHeaderCB );
         ctx->rxFrame.state = SF_SERIALMAC_IDLE;
       }
@@ -440,10 +422,20 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
     /* Check if inverted length feature should be used. */
     #if SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL
     ctx->useInvertedLengthField = useInvertedLengthField;
+    ctx->headerLength = SF_SERIALMAC_PROTOCOL_HEADER_LEN;
+
+    if( !ctx->useInvertedLengthField )
+    {
+        /* Inverted length field not used.
+           Therefore subtract its length from headerLength. */
+        ctx->headerLength -= SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN;
+    }
+
     #else
     /* Inverted length field is not selectable.
        Therefore the feature is activated by default. */
     ctx->useInvertedLengthField = true;
+    ctx->headerLength = SF_SERIALMAC_PROTOCOL_HEADER_LEN;
 
     if( !useInvertedLengthField )
     {
@@ -622,7 +614,6 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
         *ctx )
 {
     size_t bytesWaiting = 0;
-    size_t headerLen = SF_SERIALMAC_PROTOCOL_HEADER_LEN;
     enum sf_serialmac_return ret = SF_SERIALMAC_RETURN_SUCCESS;
 
     /** Do nothing if there is no context. */
@@ -651,16 +642,9 @@ enum sf_serialmac_return sf_serialmac_hal_rx_callback ( struct sf_serialmac_ctx
                     /** Inform the upper layer that a sync byte has been received. */
                     ctx->rx_sync_event( ctx, NULL, 0U);
                 } else {
-                    #if SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL
-                    if( !ctx->useInvertedLengthField ) {
-                      /* No inverted length byte used. Decrease default length field. */
-                        headerLen -= SF_SERIALMAC_PROTOCOL_LENGTH_INVERTED_FIELD_LEN;
-                    }
-                    #endif
-
                     initBuffer ( &ctx->rxFrame.headerBuffer, ( uint8_t* )
                                  &ctx->rxFrame.headerMemory,
-                                 headerLen,
+                                 ctx->headerLength,
                                  rxProcHeaderCB );
                     /** The received byte was no sync byte. Inform the upper layer. */
                     ctx->error_event( ctx, SF_SERIALMAC_ERROR_INVALID_SYNC_BYTE );
