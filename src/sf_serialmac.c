@@ -57,8 +57,7 @@ extern "C"
 (((uint16_t)((u8arr)[1])) & 0xFFU ) )
 
 #ifndef SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL
-#warning SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL is undefined and therefore set \
- to its default state "disabled".
+#warning Runtime configurable inverted length field selection disabled.
 #define SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL 0U
 #endif
 
