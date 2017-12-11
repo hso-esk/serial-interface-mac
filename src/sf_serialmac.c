@@ -304,10 +304,8 @@ static void rxProcHeaderCB ( struct sf_serialmac_ctx *ctx )
     ctx->rxFrame.remains = UINT8_TO_UINT16 ( ctx->rxFrame.headerMemory +
                            SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN );
 
-    #if SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL
     /* Check if inverted length feature is selected. */
     if( ctx->useInvertedLengthField )
-    #endif
     {
       /** Get the inverted length field */
       invertedLength = UINT8_TO_UINT16 ( ctx->rxFrame.headerMemory +
