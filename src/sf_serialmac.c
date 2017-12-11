@@ -417,9 +417,12 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
         SF_SERIALMAC_EVENT_ERROR error_event,
         bool useInvertedLengthField)
 {
+    enum sf_serialmac_return return_code = SF_SERIALMAC_RETURN_SUCCESS;
+
     if ( !ctx ) {
         return SF_SERIALMAC_RETURN_ERROR_NPE;
     }
+
     ctx->portHandle = portHandle;
     ctx->read = read;
     ctx->readWait = readWaiting;
@@ -438,10 +441,18 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
     #if SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL
     ctx->useInvertedLengthField = useInvertedLengthField;
     #else
+    /* Inverted length field is not selectable.
+       Therefore the feature is activated by default. */
     ctx->useInvertedLengthField = true;
+
+    if( !useInvertedLengthField )
+    {
+        /* Unsupported configuration. Inform the user about it. */
+        useInvertedLengthField = SF_SERIALMAC_RETURN_UNSUPPORTED_PARAMETER;
+    }
     #endif
 
-    return SF_SERIALMAC_RETURN_SUCCESS;
+    return return_code;
 }
 
 enum sf_serialmac_return sf_serialmac_reset ( struct sf_serialmac_ctx *ctx )
