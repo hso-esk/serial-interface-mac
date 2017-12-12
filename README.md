@@ -50,7 +50,7 @@ The Frame format is:
 The Frame format is:
 
     +--------------------+-----------------+--------------------------+-- - - --+--------------+
-    | SYNC BYTE [2 Byte] | LENGTH [2 Byte] | INVERTED LENGTH [2 Byte] | PAYLOAD | CRC [2 Byte] |
+    | SYNC BYTE [1 Byte] | LENGTH [2 Byte] | INVERTED LENGTH [2 Byte] | PAYLOAD | CRC [2 Byte] |
     +--------------------+-----------------+--------------------------+-- - - --+--------------+
 
   - INVERTED LENGTH: Bit inverted length field.
