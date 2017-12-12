@@ -56,11 +56,6 @@ extern "C"
 #define UINT8_TO_UINT16(u8arr) (((((uint16_t)((u8arr)[0]))<<8U) & 0xFF00U) | \
 (((uint16_t)((u8arr)[1])) & 0xFFU ) )
 
-#ifndef SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL
-#warning Runtime configurable inverted length field selection disabled.
-#define SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL 0U
-#endif
-
 static struct sf_serialmac_buffer* initBuffer (
     struct sf_serialmac_buffer *buffer, uint8_t *memory, size_t length,
     SF_SERIALMAC_BUF_EVT callback );
