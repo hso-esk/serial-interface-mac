@@ -95,7 +95,7 @@ and run:
 
 or to define a custom install directory e.g. devroot:
 
-    cmake .. -DCMAKE_INSTALL_PREFIX=devroot
+    cmake -DCMAKE_INSTALL_PREFIX=devroot ..
     make
     make install
 
@@ -110,6 +110,7 @@ If run under Ubuntu, Debian or LinuxMint, a debian package will be generated.
 
 To generate the doxygen documentation run:
 
+    cmake -DBUILD_DOC=on ..
     make doc
 
 # Usage
