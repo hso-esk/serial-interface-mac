@@ -119,6 +119,14 @@ To generate the doxygen documentation run:
 
 Doxygen documentation will generated under `<build_directory>/doc/html`. Open the **index.html** file within that directory with a web browser to access the generated documentation.
 
+## Protocol v1/v2
+
+Due to backward compatibility reasons the serial mac library v3.0.0 introduces the possibility to set the MAC protocol version at runtime. CMake builds both configurable and not-configurable versions of the library.
+The **not-configurable version uses protocol v2**. An attempt to set it to protocol v1 will cause the **sf_serialmac_init()** function to fail with a **SF_SERIALMAC_RETURN_UNSUPPORTED_PARAMETER** return value.
+
+## Non CMake Build
+When building the library without CMake the **SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL** flag has to be set in order to enable the protocol version runtime configuration.
+
 # Usage
 
 ## Initialization
