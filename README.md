@@ -56,7 +56,7 @@ The Frame format is:
     | SYNC BYTE [1 Byte] | LENGTH [2 Byte] | INVERTED LENGTH [2 Byte] | PAYLOAD | CRC [2 Byte] |
     +--------------------+-----------------+--------------------------+-- - - --+--------------+
 
-  - INVERTED LENGTH: Bit inverted length field.
+  - INVERTED LENGTH: Bitwise inverted length field.
   - All other fields are described in Serial MAC Protocol V1.
 
   Example:
@@ -107,7 +107,8 @@ To generate packages run:
     make package
 
 This will generate a tar.gz archive, and installer shell script by default.
-If run under Ubuntu, Debian or LinuxMint, a debian package will be generated.
+If run under Ubuntu, Debian or LinuxMint, a **deb** package will be generated.
+Use **dpkg** as follows to install the package.
 
     dpkg -i package_name.deb
 
