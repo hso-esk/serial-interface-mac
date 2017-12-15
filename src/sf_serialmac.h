@@ -41,6 +41,9 @@ extern "C"
 #ifndef __STACKFORCE_SERIALMAC_H_
 #define __STACKFORCE_SERIALMAC_H_
 
+/*! @defgroup SF_SERIALMAC Serial Interface MAC
+ *  @{ */
+
 /* Definition of portable data types */
 #include <stdint.h>
 /* This API makes use of size_t */
@@ -75,6 +78,8 @@ enum sf_serialmac_return
     SF_SERIALMAC_RETURN_ERROR_EXCEPTION,
     /** There was an error in buffer handling */
     SF_SERIALMAC_RETURN_ERROR_BUFFER,
+    /** The parameter/setting is not supported. */
+    SF_SERIALMAC_RETURN_UNSUPPORTED_PARAMETER
 };
 
 /**
@@ -88,7 +93,12 @@ enum sf_serialmac_error
       * The first received byte is not a SYNC BYTE.
       * After this indication the control is handed back to the upper layer.
       */
-    SF_SERIALMAC_ERROR_INVALID_SYNC_BYTE
+    SF_SERIALMAC_ERROR_INVALID_SYNC_BYTE,
+    /**
+      * The validation of the LENGTH and the INVERTED LENGTH field failed.
+      * Upper layer has to decide how this problem is treated.
+      */
+    SF_SERIALMAC_ERROR_LENGTH_VERIFICATION_FAILED
 };
 
 /**
@@ -180,6 +190,9 @@ size_t sf_serialmac_ctx_size ( void );
  * outgoing buffer has been processed.
  * @param error_event Callback function to be called by the MAC to indicate
  * an error while processing incoming bytes.
+ * @param useInvertedLengthField Configure if the Serial MAC should use the inverted
+ * length field feature. To use this option the macro
+ * @ref SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL  must be set to true.
  * @return Error state.
  */
 enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
@@ -188,7 +201,8 @@ enum sf_serialmac_return sf_serialmac_init ( struct sf_serialmac_ctx *ctx,
         SF_SERIALMAC_HAL_WRITE_FUNCTION write, SF_SERIALMAC_EVENT rx_event,
         SF_SERIALMAC_EVENT rx_buffer_event, SF_SERIALMAC_EVENT rx_sync_event,
         SF_SERIALMAC_EVENT tx_event, SF_SERIALMAC_EVENT tx_buffer_event,
-        SF_SERIALMAC_EVENT_ERROR error_event );
+        SF_SERIALMAC_EVENT_ERROR error_event,
+        bool useInvertedLengthField );
 
 /**
  * Reset function of STACKFORCE Serial MAC.
@@ -343,16 +357,17 @@ enum sf_serialmac_return sf_serialmac_rx_frame ( struct sf_serialmac_ctx *ctx,
  */
 
 /** SYNC word of the STACKFORCE serial protocol */
-#define SF_SERIALMAC_PROTOCOL_SYNC_WORD              0xA5U
+#define SF_SERIALMAC_PROTOCOL_SYNC_WORD                  0xA5U
 /** Length of the STACKFORCE serial protocol SYNC word field. */
-#define SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN          0x01U
+#define SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN              0x01U
 /** Length of the STACKFORCE serial protocol length field */
-#define SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN       0x02U
+#define SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN           0x02U
 /** Length of the STACKFORCE serial protocol CRC field */
-#define SF_SERIALMAC_PROTOCOL_CRC_FIELD_LEN          0x02U
+#define SF_SERIALMAC_PROTOCOL_CRC_FIELD_LEN              0x02U
 /** Length of the serial MAC frame header */
 #define SF_SERIALMAC_PROTOCOL_HEADER_LEN      \
- (SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN + SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN)
+ (SF_SERIALMAC_PROTOCOL_SYNC_WORD_LEN + SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN + \
+  SF_SERIALMAC_PROTOCOL_LENGTH_FIELD_LEN)
 
 /**
  * A frame consists of the elements:
@@ -460,7 +475,14 @@ struct sf_serialmac_ctx {
     struct sf_serialmac_frame txFrame;
     /** Context of the frame to receive. */
     struct sf_serialmac_frame rxFrame;
+    /** Configures if the inverted length field feature is used. */
+    bool useInvertedLengthField;
+    /** Length of the Serial MAC header. */
+    size_t headerLength;
+
 };
+
+/*!@} end of SF_SERIALMAC */
 
 #endif /* STACKFORCE_SERIALMAC_H_ */
 #ifdef __cplusplus

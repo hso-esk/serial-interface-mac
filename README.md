@@ -18,13 +18,55 @@ before sending them over the serial interface.
 On RX the STACKFORCE Serial MAC listens for incoming frames, verifies their
 CRC and provides the payload to the upper layer.
 
-## Frame format
+## Serial MAC Protocol version
+
+The Serial MAC Protocol version describes the structure of a Serial MAC frame.
+Please note that this version is independent from the product version.
+
+### Serial MAC Protocol V1
 
 The Frame format is:
 
-    +--------------+--------+-- - - --+-----+
-    | SYNC BYTE(S) | LENGTH | payload | CRC |
-    +--------------+--------+-- - - --+-----+
+    +--------------------+-----------------+-- - - --+--------------+
+    | SYNC BYTE [1 Byte] | LENGTH [2 Byte] | PAYLOAD | CRC [2 Byte] |
+    +--------------------+-----------------+-- - - --+--------------+
+
+  - SYNC BYTE: Fixed value 0xA5.
+  - LENGTH: Transmitted payload size. HEADER and CRC are not counted.
+  - MAC PAYLOAD Payload of the Serial MAC frame. Variable length which is described through the length field. The content of the MAC PAYLOAD is the serial protocol.
+  - CRC: Cyclic redundancy check sum over the MAC PAYLOAD. The CRC polynomial is:
+
+
+    x^16 + x^13 + x^12 + x^11 + x^10 + x^8 + x^6 + x^5 + x^2 + 1
+
+  Example:
+    - Payload: 0x01
+
+
+    +----+-------+----+-------+
+    | A5 | 00 01 | 01 | C2 9A |
+    +----+-------+----+-------+
+
+
+### Serial MAC Protocol V2
+
+The Frame format is:
+
+    +--------------------+-----------------+--------------------------+-- - - --+--------------+
+    | SYNC BYTE [1 Byte] | LENGTH [2 Byte] | INVERTED LENGTH [2 Byte] | PAYLOAD | CRC [2 Byte] |
+    +--------------------+-----------------+--------------------------+-- - - --+--------------+
+
+  - INVERTED LENGTH: Bitwise inverted length field.
+  - All other fields are described in Serial MAC Protocol V1.
+
+  Example:
+    - Payload: 0x01
+
+
+    +----+-------+-------+----+-------+
+    | A5 | 00 01 | FF FE | 01 | C2 9A |
+    +----+-------+-------+----+-------+
+
 
 ## Features
 
@@ -56,7 +98,7 @@ and run:
 
 or to define a custom install directory e.g. devroot:
 
-    cmake .. -DCMAKE_INSTALL_PREFIX=devroot
+    cmake -DCMAKE_INSTALL_PREFIX=devroot ..
     make
     make install
 
@@ -65,58 +107,70 @@ To generate packages run:
     make package
 
 This will generate a tar.gz archive, and installer shell script by default.
-If run under Ubuntu, Debian or LinuxMint, a debian package will be generated.
+If run under Ubuntu, Debian or LinuxMint, a **deb** package will be generated.
+Use **dpkg** as follows to install the package.
 
     dpkg -i package_name.deb
 
 To generate the doxygen documentation run:
 
+    cmake -DBUILD_DOC=on ..
     make doc
+
+Doxygen documentation will generated under `<build_directory>/doc/html`. Open the **index.html** file within that directory with a web browser to access the generated documentation.
+
+## Protocol v1/v2
+
+Due to backward compatibility reasons the serial mac library v3.0.0 introduces the possibility to set the MAC protocol version at runtime. CMake builds both configurable and not-configurable versions of the library.
+The **not-configurable version uses protocol v2**. An attempt to set it to protocol v1 will cause the **sf_serialmac_init()** function to fail with a **SF_SERIALMAC_RETURN_UNSUPPORTED_PARAMETER** return value.
+
+## Non CMake Build
+When building the library without CMake the **SF_SERIALMAC_INVERTED_LENGTH_RUNTIME_SEL** flag has to be set in order to enable the protocol version runtime configuration.
 
 # Usage
 
 ## Initialization
 
 To use the STACKFORCE Serial MAC you have to initialize it using
-sf_serialmac_init()
+**sf_serialmac_init()**
 
 ## Reacting to events
 
 The STACKFORCE Serial MAC is event driven. You can use the MAC by calling
-sf_serialmac_entry() periodically.
+**sf_serialmac_entry()** periodically.
 
-Or you can add sf_serialmac_hal_tx_callback() and
-sf_serialmac_hal_rx_callback() as callback function to the corresponding
+Or you can add **sf_serialmac_hal_tx_callback()** and
+**sf_serialmac_hal_rx_callback()** as callback function to the corresponding
 serial port events.
 
 ## Receiving frames
 
 Whenever the STACKFORCE Serial MAC receives the header of a frame it calls
-the upper layers callback function registered as SF_SERIALMAC_RX_EVENT
-rx_buffer_event() on Initialization. To receive the frame the upper layer has
+the upper layers callback function registered as **SF_SERIALMAC_RX_EVENT
+rx_buffer_event()** on Initialization. To receive the frame the upper layer has
 to provide a memory location for the payload passed to the MAC by calling
-sf_serialmac_rx_frame(). As soon as the frame has been completed,
+**sf_serialmac_rx_frame()**. As soon as the frame has been completed,
 the upper layer's callback function is called which has been registered
-as SF_SERIALMAC_RX_EVENT rx_event() on initialization.
+as **SF_SERIALMAC_RX_EVENT rx_event()** on initialization.
 
 In case there is any error or problem (e.g. invalid CRC) while receiving a frame,
 the upper layer's error callback function is called. This function has been registered as
-SF_SERIALMAC_EVENT_ERROR error_event on initialization.
+**SF_SERIALMAC_EVENT_ERROR error_event** on initialization.
 
 ## Transmitting frames
 
-Frames can be transmitted at once using sf_serialmac_tx_frame(). Or by
-starting a frame with sf_serialmac_tx_frame_start() and successively
-appending the payload using sf_serialmac_tx_frame_append() until the frame
+Frames can be transmitted at once using **sf_serialmac_tx_frame()**. Or by
+starting a frame with **sf_serialmac_tx_frame_start()** and successively
+appending the payload using **sf_serialmac_tx_frame_append()** until the frame
 is filled.
 
 Whenever the MAC completed the transmission of a frame the upper layer's
-callback called that has been registered as SF_SERIALMAC_TX_EVENT tx_event()
+callback called that has been registered as **SF_SERIALMAC_TX_EVENT tx_event()**
 on initialization.
 
 Whenever the MAC processed a buffer with payload the upper layer's callback
-is called which has been registered as SF_SERIALMAC_TX_EVENT tx_buf_event on
+is called which has been registered as **SF_SERIALMAC_TX_EVENT tx_buf_event** on
 initialization. The upper layer must not touch the buffer memory passed with
-sf_serialmac_tx_frame() or sf_serialmac_tx_frame_append() before this
-callback has been called. Also all calls to sf_serialmac_tx_frame_append()
+**sf_serialmac_tx_frame()** or **sf_serialmac_tx_frame_append()** before this
+callback has been called. Also all calls to **sf_serialmac_tx_frame_append()**
 are ignored until the previously provided buffer has been processed.

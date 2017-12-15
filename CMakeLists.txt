@@ -32,6 +32,6 @@
 ##
 
 cmake_minimum_required(VERSION 3.6)
-project(sfserialmac VERSION 2.0.0)
+project(sfserialmac VERSION 3.0.0)
 
 add_subdirectory(src)
