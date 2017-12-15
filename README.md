@@ -117,6 +117,8 @@ To generate the doxygen documentation run:
     cmake -DBUILD_DOC=on ..
     make doc
 
+Doxygen documentation will generated under `<build_directory>/doc/html`. Open the **index.html** file within that directory with a web browser to access the generated documentation.
+
 # Usage
 
 ## Initialization
