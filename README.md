@@ -34,7 +34,10 @@ The Frame format is:
   - SYNC BYTE: Fixed value 0xA5.
   - LENGTH: Transmitted payload size. HEADER and CRC are not counted.
   - MAC PAYLOAD Payload of the Serial MAC frame. Variable length which is described through the length field. The content of the MAC PAYLOAD is the serial protocol.
-  - CRC: Cyclic redundancy check sum over the MAC PAYLOAD. The CRC polynomial is: x^16 + x^13 + x^12 + x^11 + x^10 + x^8 + x^6 + x^5 + x^2 + 1
+  - CRC: Cyclic redundancy check sum over the MAC PAYLOAD. The CRC polynomial is:
+
+
+    x^16 + x^13 + x^12 + x^11 + x^10 + x^8 + x^6 + x^5 + x^2 + 1
 
   Example:
     - Payload: 0x01
